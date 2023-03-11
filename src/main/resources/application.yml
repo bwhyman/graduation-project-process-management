@@ -1,0 +1,30 @@
+spring:
+  sql:
+    init:
+      mode: always
+  r2dbc:
+    url: 'r2dbc:mysql://172.18.16.100:3306/graduation_project_process_management'
+    username: root
+    password: a1213a
+    pool:
+      enabled: true
+      initial-size: 1
+      validation-query: select 1
+      max-life-time: 10000
+
+  jackson:
+    default-property-inclusion: non_null
+
+logging:
+  level:
+    root: info
+    com:
+      example: debug
+    org:
+      springframework:
+        r2dbc: debug
+  pattern:
+    console: '%-5level %C.%M[%line] - %msg%n'
+
+my:
+  secretkey: 636eac2534bcfcc0

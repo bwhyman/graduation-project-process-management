@@ -1,0 +1,131 @@
+###
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "2046",
+  "password": "2046"
+}
+
+> {% client.global.set("token", response.headers.valueOf("token")); %}
+###
+POST http://localhost:8080/api/admin/teachers
+token: {{token}}
+Content-Type: application/json
+
+[
+  {
+    "name": "BO",
+    "number": "2001",
+    "teacher": "{\"total\": 10, \"count\": 0}",
+    "groupNumber": 1
+  },
+  {
+    "name": "SUN",
+    "number": "2002",
+    "teacher": "{\"total\": 5, \"count\": 0}",
+    "groupNumber": 2
+  }
+]
+###
+POST http://localhost:8080/api/admin/students
+token: {{token}}
+Content-Type: application/json
+
+[
+  {
+    "name": "wang-1",
+    "number": "202001"
+
+  },
+  {
+    "name": "wang-2",
+    "number": "202002"
+  },
+  {
+    "name": "zhang-1",
+    "number": "202003"
+
+  },
+  {
+    "name": "zhang-2",
+    "number": "202004"
+  }
+]
+### 必须选导师结束，创建完studentjson对象后执行
+POST http://localhost:8080/api/admin/students/groupnumbers
+token: {{token}}
+Content-Type: application/json
+
+[
+  {
+    "number": "202001",
+    "groupNumber": 2,
+    "queueNumber": 21
+  },
+  {
+    "number": "202002",
+    "groupNumber": 2,
+    "queueNumber": 7
+  },
+  {
+    "number": "202003",
+    "groupNumber": 1,
+    "queueNumber": 14
+  },
+  {
+    "number": "202004",
+    "groupNumber": 1,
+    "queueNumber": 5
+  }
+]
+### 必须选导师结束，创建完studentjson对象后执行
+POST http://localhost:8080/api/admin/students/projects
+token: {{token}}
+Content-Type: application/json
+
+[
+  {
+    "number": "202001",
+    "projectTitle": "ProjectTitle-1"
+  },
+  {
+    "number": "202002",
+    "projectTitle": "ProjectTitle-2"
+  },
+  {
+    "number": "202003",
+    "projectTitle": "ProjectTitle-3"
+  },
+  {
+    "number": "202004",
+    "projectTitle": "ProjectTitle-4"
+  }
+]
+###
+POST http://localhost:8080/api/admin/processes
+token: {{token}}
+Content-Type: application/json
+
+{
+  "name": "开题",
+  "auth": 2,
+  "items": "[\n  {\n    \"number\": 0,\n    \"name\": \"2.1\",\n    \"point\": 50,\n    \"description\": \"选题依据（选题意义，国内外动态，初步设想及创新点等）及可行性论述。\"\n  },\n  {\n    \"number\": 1,\n    \"name\": \"3.3\",\n    \"point\": 50,\n    \"description\": \"开题答辩过程中能否清楚陈述自己对毕业设计题目的深入理解，表达思路是否清晰，重点是否突出，能否正确回答与毕设工作相关的提问，开题报告结构组织是否清晰合理、行文语言是否流畅准确、撰写格式是否符合规范要求。\"\n  }\n]"
+}
+###
+POST http://localhost:8080/api/admin/processes
+token: {{token}}
+Content-Type: application/json
+
+{
+  "name": "期中",
+  "auth": 1,
+  "items": "[\n    {\n      \"number\": 0,\n      \"point\": 50,\n      \"name\": \"5.1\",\n      \"description\": \"期中-1\"\n    },\n    {\n      \"number\": 1,\n      \"point\": 50,\n      \"name\": \"5.5\",\n      \"description\": \"期中-2\"\n    }\n  ]"
+}
+### 权限
+GET http://localhost:8080/api/admin/info
+token: {{token}}
+
+### 无权限
+GET http://localhost:8080/api/admin/info
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMDcwMDA0Nzc4NTMwNDkyNDE2Iiwicm9sZSI6NSwiZXhwIjoxNjc3NTk5MzEwLCJpYXQiOjE2NzUxODAxMTB9.WEa8PBmuGH5Tdr345C4LVxhGVU3ymKPbUwyOSpJXvIY

@@ -1,0 +1,42 @@
+### 教师
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "2001",
+  "password": "2001"
+}
+### 学生
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "202001",
+  "password": "202001"
+}
+### 用户不存在
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "1212",
+  "password": "12"
+}
+### 密码错误
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "2001",
+  "password": "11"
+}
+###
+GET http://localhost:8080/api/info
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMDcwMDA0Nzc4NTMwNDkyNDE2Iiwicm9sZSI6NSwiZXhwIjoxNjc3NTk5MzEwLCJpYXQiOjE2NzUxODAxMTB9.WEa8PBmuGH5Tdr345C4LVxhGVU3ymKPbUwyOSpJXvIY
+
+### 未登录
+GET http://localhost:8080/api/info
+
+### 无效资源
+GET http://localhost:8080/res/res
+

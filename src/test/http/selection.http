@@ -1,0 +1,13 @@
+### 学生
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "number": "202001",
+  "password": "202001"
+}
+###
+PUT http://localhost:8080/api/student/teachers/1070369070345867264
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMDcwMzg3MTM5NTMzMzI4Mzg0Iiwicm9sZSI6MSwiZXhwIjoxNjc3Njg5OTE1LCJpYXQiOjE2NzUyNzA3MTV9.6xx0YlvjyHuTk9XGFKG-fv5wbKgFZaqMhdXYm74OL8Y
+
+
