@@ -13,6 +13,6 @@ public class UserRepositoryTest {
 
     @Test
     public void findByNumberTest() {
-        userRepository.findByNumber("2001").doOnSuccess(user -> log.debug(user.toString())).block();
+        userRepository.findByNumber("admin").doOnSuccess(user -> log.debug(user.toString())).block();
     }
 }

@@ -14,7 +14,7 @@ public class UserServiceTest {
     private UserService userService;
     @Test
     public void listStudentsTest() {
-        userService.listUsers(1, User.ROLE_STUDENT).doOnSuccess(students -> {
+        userService.listUsers(User.ROLE_STUDENT, 1).doOnSuccess(students -> {
             for (User s : students) {
                 log.debug(s.toString());
             }
@@ -23,7 +23,7 @@ public class UserServiceTest {
 
     @Test
     public void listTeachersTest() {
-        userService.listUsers(1, User.ROLE_TEACHER).doOnSuccess(teachers -> {
+        userService.listUsers(User.ROLE_TEACHER, 1).doOnSuccess(teachers -> {
             for (User t : teachers) {
                 log.debug(t.toString());
             }

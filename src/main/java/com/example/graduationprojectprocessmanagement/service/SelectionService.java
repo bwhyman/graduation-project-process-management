@@ -22,9 +22,9 @@ public class SelectionService {
         Mono<User> studentM = userRepository.findById(sid);
         Mono<User> teacherM = userRepository.findById(tid);
         return resultM.filter(r -> r != 0)
-                .switchIfEmpty(Mono.error(new XException(Code.QUANTITY_FULL)))
+                .switchIfEmpty(Mono.error(XException.builder().code(Code.QUANTITY_FULL).build()))
                 .flatMap(r -> studentM.filter(student -> student.getStudent() == null)
-                        .switchIfEmpty(Mono.error(new XException(Code.REPEAT_SELECTION)))
+                        .switchIfEmpty(Mono.error(XException.builder().code(Code.REPEAT_SELECTION).build()))
                         .flatMap(student -> teacherM.flatMap(teacher -> {
                             String teacherJSON = """
                                     {"teacherId": "%s", "teacherName": "%s"}

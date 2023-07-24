@@ -22,7 +22,7 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     Flux<User> findByRole(int role);
 
-    Flux<User> findByGroupNumberAndRole(int groupNumber, int role);
+    Flux<User> findByRoleAndGroupNumber(int role, int groupNumber);
 
     @Query("""
             select * from user u where u.student->>'$.teacherId'=:tid

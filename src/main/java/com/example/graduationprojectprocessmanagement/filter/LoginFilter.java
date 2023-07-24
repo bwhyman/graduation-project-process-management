@@ -1,12 +1,12 @@
 package com.example.graduationprojectprocessmanagement.filter;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.graduationprojectprocessmanagement.component.JWTComponent;
 import com.example.graduationprojectprocessmanagement.exception.Code;
+import com.example.graduationprojectprocessmanagement.exception.XException;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -29,9 +29,10 @@ public class LoginFilter implements WebFilter {
     private final JWTComponent jwtComponent;
     private final ResponseHelper responseHelper;
 
-    @NotNull
+    @NonNull
     @Override
-    public Mono<Void> filter(@NotNull ServerWebExchange exchange, @NotNull WebFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
+
         ServerHttpRequest request = exchange.getRequest();
         // 允许非数据接口请求。Swagger /swagger-ui/index.html
         if (excludes.matches(request.getPath().pathWithinApplication())) {
@@ -44,13 +45,28 @@ public class LoginFilter implements WebFilter {
         if (token == null) {
             return responseHelper.response(Code.UNAUTHORIZED, exchange);
         }
-        DecodedJWT decode = jwtComponent.decode(token);
+
+        return jwtComponent.decode(token)
+                .flatMap(decode -> {
+                    exchange.getAttributes().put(RequestAttributeConstant.UID, decode.getClaim(RequestAttributeConstant.UID).asString());
+                    exchange.getAttributes().put(RequestAttributeConstant.ROLE, decode.getClaim(RequestAttributeConstant.ROLE).asInt());
+
+                    if (!decode.getClaim(RequestAttributeConstant.GROUP_NUMBER).isMissing()) {
+                        exchange.getAttributes().put(RequestAttributeConstant.GROUP_NUMBER, decode.getClaim(RequestAttributeConstant.GROUP_NUMBER).asInt());
+                    }
+                    return chain.filter(exchange);
+                })
+                .onErrorResume(e -> responseHelper.response(((XException) e).getCode(), exchange));
+
+        //
+        /*DecodedJWT decode = jwtComponent.decode(token);
         exchange.getAttributes().put(RequestAttributeConstant.UID, decode.getClaim(RequestAttributeConstant.UID).asString());
-        exchange.getAttributes().put(RequestAttributeConstant.ROLE, decode.getClaim(RequestAttributeConstant.ROLE).asInt());
+        exchange.getAttributes().put(RequestAttributeConstant.ROLE, decode.getClaim(RequestAttributeConstant.ROLE).asString());
 
         if (!decode.getClaim(RequestAttributeConstant.GROUP_NUMBER).isMissing()) {
             exchange.getAttributes().put(RequestAttributeConstant.GROUP_NUMBER, decode.getClaim(RequestAttributeConstant.GROUP_NUMBER).asInt());
         }
-        return chain.filter(exchange);
+        return chain.filter(exchange);*/
+
     }
 }

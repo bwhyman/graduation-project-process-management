@@ -8,8 +8,10 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.graduationprojectprocessmanagement.exception.Code;
 import com.example.graduationprojectprocessmanagement.exception.XException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +19,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class JWTComponent {
     // 私钥
     @Value("${my.secretkey}")
@@ -30,12 +33,29 @@ public class JWTComponent {
                 .sign(Algorithm.HMAC256(secretkey));
     }
 
-    public DecodedJWT decode(String token) {
+    /*public DecodedJWT decode(String token) {
         try {
             return JWT.require(Algorithm.HMAC256(secretkey)).build().verify(token);
         } catch (TokenExpiredException | SignatureVerificationException | JWTDecodeException e) {
-            Code code = e instanceof TokenExpiredException ? Code.TOKEN_EXPIRED : Code.FORBIDDEN;
-            throw new XException(code);
+            Code code = Code.FORBIDDEN;
+            if (e instanceof TokenExpiredException) {
+                code = Code.TOKEN_EXPIRED;
+            }
+            throw XException.builder().code(code).build();
         }
+    }*/
+
+    public Mono<DecodedJWT> decode(String token) {
+        DecodedJWT decodedJWT;
+        try {
+            decodedJWT = JWT.require(Algorithm.HMAC256(secretkey)).build().verify(token);
+        } catch (TokenExpiredException | SignatureVerificationException | JWTDecodeException e) {
+            Code code = Code.FORBIDDEN;
+            if (e instanceof TokenExpiredException) {
+                code = Code.TOKEN_EXPIRED;
+            }
+            return Mono.error(XException.builder().code(code).build());
+        }
+       return Mono.just(decodedJWT);
     }
 }

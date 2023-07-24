@@ -7,7 +7,7 @@ public enum Code {
     TOKEN_EXPIRED(403, "过期请重新登录"),
     FORBIDDEN(403, "无权限"),
     NOT_START(201, "未开始"),
-    QUANTITY_FULL(210, "导师数量已满"),
+    QUANTITY_FULL(210, "导师数量已满，请重新选择"),
     REPEAT_SELECTION(211, "导师不可重复选择");
 
     private final int code;

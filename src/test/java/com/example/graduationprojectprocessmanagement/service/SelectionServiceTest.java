@@ -16,15 +16,15 @@ public class SelectionServiceTest {
 
     @Test
     public void addSelectionTest() {
-        User t1 = userService.getUser("2001").block();
-        User t2 = userService.getUser("2002").block();
+        User t1 = userService.getUserByNumber("2001").block();
+        User t2 = userService.getUserByNumber("2002").block();
         assert t1 != null;
         assert t2 != null;
 
-        User s1 = userService.getUser("202001").block();
-        User s2 = userService.getUser("202002").block();
-        User s3 = userService.getUser("202003").block();
-        User s4 = userService.getUser("202004").block();
+        User s1 = userService.getUserByNumber("202001").block();
+        User s2 = userService.getUserByNumber("202002").block();
+        User s3 = userService.getUserByNumber("202003").block();
+        User s4 = userService.getUserByNumber("202004").block();
         assert s1 != null;
         assert s2 != null;
         assert s3 != null;

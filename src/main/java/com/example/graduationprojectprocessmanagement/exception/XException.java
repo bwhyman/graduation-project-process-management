@@ -1,13 +1,13 @@
 package com.example.graduationprojectprocessmanagement.exception;
 
 
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class XException extends RuntimeException{
-    private final Code code;
-
-    public XException(Code code) {
-        this.code = code;
-    }
+    private Code code;
 }

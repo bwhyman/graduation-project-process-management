@@ -49,6 +49,7 @@
 
 毕业设计包含若干过程(开题答辩/期中检查/毕业答辩/演示)，过程100分按比例包含若干打分项；不同过程由学生所在组评审或指导教师打分。  
 过程/项/比例等均为动态添加。
+
 #### 实现
 
 过程不支持打分，过程至少包含一个打分项；  
@@ -65,18 +66,25 @@
 学生上传电子版开题/毕设报告，评审浏览评分？  
 01-李明-开题报告
 
+### 转组 & 创建新组
+支持将学生/评审转入不同的组。
+
+需要为二次答辩学生创建新组。
+
 ### Technologies
+
 OpenJDK ^17  
 springboot ^3.0.1  
 spring-data-r2dbc   
 spring-webflux   
-jasync-r2dbc-mysql 2.1.12。r2dbc实现切换到jasync-r2dbc-mysql，原实现2021年至今不更新不支持1.0规范。  
+asyncer-io    
 MySQL 8.0.32
 
 尝试了redis 7。spring-redis不支持原生JSON，redis官方OM框架支持有限且很不灵活。  
 还是使用已原生支持JSON的MySQL，采用SQL/NoSQL混合开发模式。
 
 ### Others
+
 #### MySQL JSON
 
 查询items数组中包含number=1对象记录
@@ -90,11 +98,35 @@ select * from process p where json_contains(p.items, json_object('number', 1));
 
 致使创建索引/基于索引查询时，如果字符集不匹配则无法命中索引  
 utf8mb4_bin字符按二进制，区分大小写
+
 ```sql
-index ((cast(student ->> '$.teacherId' as char(21)) collate utf8mb4_bin))
+index ((cast(student ->> '$.teacherId' as char(19)) collate utf8mb4_bin))
 ```
+
 ```sql
 select * from user u where u.student->>'$.teacherId'='1069607508454658048';
+```
+JSON_TABLE()函数，可将json字段作为table处理，从数组中提取属性值。不知道执行效率怎样。  
+concat()函数，拼接字符串。
+```sql
+update process_test ps join JSON_TABLE(
+        ps.detail,
+        '$[*]'
+        columns (
+            `id` for ordinality,
+            `tid` char(19) path '$.teacherId'
+            )
+    ) jt on jt.tid = '1127183851567038464'
+set ps.detail = json_set(ps.detail, concat('$[', jt.id - 1, ']'),
+                         json_object('teacherId', '1127183851567038464', 'score', 3))
+where ps.student_id = '1127183678753325056' and ps.process_id = '1129448465769680896';
+```
+
+json_arrayagg()函数，将字段转为json对象。
+```sql
+select ps.id, 
+       json_arrayagg(json_object('teahcerId', ps.teacher_id, 'processId', ps.process_id, 'score', ps.score)) as json
+from process_score ps group by ps.id;
 ```
 
 #### Batch Update
@@ -115,13 +147,31 @@ public Mono<Void> updateProjectTitles(List<StudentDTO> studentDTOs) {
 ```
 
 #### PathPattern
+
 spring提供PathPattern类实现路径模糊匹配功能，可用于webflux拦截器判断。
 
 #### Publisher Errors
+
 Reactive Publisher支持直接添加返回异常对象，而无需像传统方法的抛出捕获异常！~
 即Mono/flux可以封装正常元素，以及异常对象，在订阅时单独以流的方式处理异常对象而非捕获。
 
+```java
+public Mono<User> addSelection() {
+    if() {
+        return Mono.error(new XException());    
+    }
+    return Mono.just(new User());
+}
+```
+
+```java
+addSelection()
+        .map(user -> Mono.just(user))
+        .onErrorResume(XException.class, throwable -> Mono.just("error"));
+```
+
 #### Publisher Operators Not be Invoked
+
 First of all, remember that operators such .map, .flatMap, .filter and many others will not be invoked at all if 
 there no onNext has been invoked. That means that in your case next code.  
 Using operators .switchIfEmpty/.defaultIfEmpty/Mono.repeatWhenEmpty.
@@ -132,41 +182,27 @@ switchIfEmpty()，当订阅的元素为空时，回调。
 结合使用map()/flatMap()/filter()/mapNotNull()/switchIfEmpty()/onErrorResume()/Mono.error()等方法。
 
 ```java
-public Mono<User> addSelection() {
-    if() {
-        return Mono.error(new XException());    
-    }
-    return Mono.just(new User());
+public Mono<ResultVO> login() {
+    return userService.getUser()
+                      .filter()
+                      .defaultIfEmpty();
 }
 ```
+当返回空时
 ```java
-addSelection()
-        .map(user -> Mono.just(user))
-        .onErrorResume(XException.class, throwable -> Mono.just("error"));
+.switchIfEmpty(Mono.defer(() -> {}));
 ```
 
 #### Persistable
 
+没用上
+
 DO类实现`Persistable<ID>`接口重写isNew()方法，决定当对象包含ID值时执行save()方法时映射SQL insert还是update语句，
 可用于手动添加共用主键(JPA使用注解即可)。
 
-```json
-{
-  "name": "期中",
-  "auth": 1,
-  "items": [
-    {
-      "number": 0,
-      "point": 50,
-      "name": "5.1",
-      "description": "期中-1"
-    },
-    {
-      "number": 1,
-      "point": 50,
-      "name": "5.5",
-      "description": "期中-2"
-    }
-  ]
-}
-```
+#### MySQL Index
+
+MySQL索引类型与传入参数类型不匹配可能使索引失效。  
+当索引类型为数字，传入数字或字符串MySQL均可完成隐形转换命中索引；  
+但当索引类型为字符串，如果传入数字类型参数将无法命中索引。  
+因此查询使类型一定要匹配。  

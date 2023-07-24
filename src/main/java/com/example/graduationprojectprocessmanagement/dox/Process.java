@@ -1,5 +1,6 @@
 package com.example.graduationprojectprocessmanagement.dox;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,10 +24,13 @@ public class Process {
     private String name;
     // json
     private String items;
+    private int point;
     private Integer auth;
     @ReadOnlyProperty
+    @JsonIgnore
     private LocalDateTime insertTime;
     @ReadOnlyProperty
+    @JsonIgnore
     private LocalDateTime updateTime;
 
 }

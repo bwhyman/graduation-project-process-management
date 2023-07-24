@@ -18,7 +18,11 @@ public class ResultVO {
     }
 
     public static ResultVO success(Code code, Map<String, Object> data) {
-        return ResultVO.builder().code(code.getCode()).message(code.getMessage()).data(data).build();
+        return ResultVO.builder()
+                .code(code.getCode())
+                .message(code.getMessage())
+                .data(data)
+                .build();
     }
 
     public static ResultVO error(int code, String msg) {
@@ -26,6 +30,9 @@ public class ResultVO {
     }
 
     public static ResultVO error(Code code) {
-        return ResultVO.builder().code(code.getCode()).message(code.getMessage()).build();
+        return ResultVO.builder()
+                .code(code.getCode())
+                .message(code.getMessage())
+                .build();
     }
 }

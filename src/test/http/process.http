@@ -9,11 +9,11 @@ Content-Type: application/json
 
 > {% client.global.set("token", response.headers.valueOf("token")); %}
 ###
-GET http://localhost:8080/api/teacher/process/processes
+GET http://localhost:8080/api/teacher/processes
 token: {{token}}
 
 ###
-POST http://localhost:8080/api/teacher/process/processscores
+POST http://localhost:8080/api/teacher/processscores
 token: {{token}}
 Content-Type: application/json
 
@@ -23,9 +23,9 @@ Content-Type: application/json
   "detail": "{\n                \"scores\": 80, \n                \"details\": [{\"number\": 0, \"score\": 40}, {\"number\": 1, \"score\": 40}]\n                }"
 }
 ### 指定过程，评审
-GET http://localhost:8080/api/teacher/process/processes/1070382937616666624
+GET http://localhost:8080/api/teacher/processes/1070382937616666624
 token: {{token}}
 
 ### 指定过程，指导教师
-GET http://localhost:8080/api/teacher/process/processes/1070552139027697664
+GET http://localhost:8080/api/teacher/processes/1070552139027697664
 token: {{token}}

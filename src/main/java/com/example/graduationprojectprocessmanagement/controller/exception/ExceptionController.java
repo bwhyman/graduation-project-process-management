@@ -1,7 +1,8 @@
-package com.example.graduationprojectprocessmanagement.exception;
+package com.example.graduationprojectprocessmanagement.controller.exception;
 
 
-
+import com.example.graduationprojectprocessmanagement.exception.Code;
+import com.example.graduationprojectprocessmanagement.exception.XException;
 import com.example.graduationprojectprocessmanagement.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.r2dbc.UncategorizedR2dbcException;
@@ -12,9 +13,10 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestControllerAdvice
 public class ExceptionController {
+    // filter内无效，单独处理。
     @ExceptionHandler(XException.class)
-    public Mono<ResultVO> handleValidException(XException exception) {
-        return Mono.just(ResultVO.error(exception.getCode()));
+    public Mono<ResultVO> handleXException(Exception exception) {
+        return Mono.just(ResultVO.error(Code.BAD_REQUEST.getCode(), exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

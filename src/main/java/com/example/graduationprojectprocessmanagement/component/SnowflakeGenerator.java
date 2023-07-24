@@ -1,4 +1,4 @@
-package com.example.graduationprojectprocessmanagement.config;
+package com.example.graduationprojectprocessmanagement.component;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import java.util.Enumeration;
 @EnableR2dbcAuditing
 public class SnowflakeGenerator {
     @Bean
-    ReactiveAuditorAware<String> auditorAware() {
+    public ReactiveAuditorAware<String> auditorAware() {
         Snowflake s = new Snowflake();
         return () -> Mono.just(String.valueOf(s.nextId()));
     }

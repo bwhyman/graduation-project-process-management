@@ -1,4 +1,4 @@
-package com.example.graduationprojectprocessmanagement.config;
+package com.example.graduationprojectprocessmanagement.component;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

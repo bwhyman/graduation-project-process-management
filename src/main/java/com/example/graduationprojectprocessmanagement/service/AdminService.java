@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,7 +25,16 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final ProcessRepository processRepository;
     private final ConnectionFactory connectionFactory;
+    private final StartTimeCache startTimeCache;
 
+    @Transactional
+    public Mono<Void> addStartTime(LocalDateTime time, String uid) {
+        return userRepository.findById(uid).flatMap(admin -> {
+            startTimeCache.setStartTime(time);
+            admin.setDescription(time.toString());
+            return userRepository.save(admin).then();
+        });
+    }
     @Transactional
     public Mono<Void> addUsers(List<User> users, int role) {
         for (User user : users) {
@@ -32,6 +42,10 @@ public class AdminService {
             user.setRole(role);
         }
         return userRepository.saveAll(users).then();
+    }
+
+    public Mono<List<Process>> listProcesses() {
+        return processRepository.findAll().collectList();
     }
 
     @Transactional

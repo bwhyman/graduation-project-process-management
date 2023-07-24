@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -18,21 +20,32 @@ public class InitService {
 
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final StartTimeCache startTimeCache;
 
     @Transactional
     @EventListener(classes = ApplicationReadyEvent.class)
     public Mono<Void> onApplicationReadyEvent() {
+        String number = "admin";
+
         return userRepository.count()
-                .filter(r -> r == 0)
                 .flatMap(r -> {
-                    String number = "2046";
-                    User admin = User.builder()
-                            .name(number)
-                            .number(number)
-                            .password(encoder.encode(number))
-                            .role(User.ROLE_ADMIN)
-                            .build();
-                    return userRepository.save(admin).then();
-                });
+                    if (r == 0) {
+                        LocalDateTime startTime = LocalDateTime.now().plusMonths(2);
+                        User admin = User.builder()
+                                .name(number)
+                                .number(number)
+                                .password(encoder.encode(number))
+                                .role(User.ROLE_ADMIN)
+                                .description(startTime.toString())
+                                .build();
+                        startTimeCache.setStartTime(startTime);
+                        return userRepository.save(admin).then();
+                    }
+                    return userRepository.findByNumber(number)
+                            .doOnSuccess(admin -> {
+                                LocalDateTime startTime = LocalDateTime.parse(admin.getDescription());
+                                startTimeCache.setStartTime(startTime);
+                            });
+                }).then();
     }
 }

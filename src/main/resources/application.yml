@@ -3,14 +3,17 @@ spring:
     init:
       mode: always
   r2dbc:
-    url: 'r2dbc:mysql://172.18.16.100:3306/graduation_project_process_management'
+    url: 'r2dbcs:mysql://192.168.1.31:3306/graduation_project_process_management'
     username: root
     password: a1213a
     pool:
       enabled: true
       initial-size: 1
       validation-query: select 1
-      max-life-time: 10000
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
 
   jackson:
     default-property-inclusion: non_null
@@ -27,4 +30,16 @@ logging:
     console: '%-5level %C.%M[%line] - %msg%n'
 
 my:
-  secretkey: 636eac2534bcfcc0
+  secretkey: '636eac2534bcfcc0'
+  upload: 'E:/'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+
+my:
+  secretkey: ${secretkey}
+  upload: '/home/upload/'

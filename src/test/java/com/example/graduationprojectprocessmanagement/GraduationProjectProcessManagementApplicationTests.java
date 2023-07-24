@@ -8,7 +8,7 @@ class GraduationProjectProcessManagementApplicationTests {
 
     @Test
     void contextLoads() {
-
+        
     }
 
 }

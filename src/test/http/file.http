@@ -1,0 +1,14 @@
+POST http://localhost:8080/api/upload/开题
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTI0OTYxNzAxNTE0MzQyNDAwIiwicm9sZSI6NSwiZXhwIjoxNjkxMDQ1NDgwLCJncm91cE51bWJlciI6MSwiaWF0IjoxNjg4MzY3MDgwfQ.3J_gzfbn7W-xg9t88yNLK7hOaG1aYIqI98P9VsnqFmo
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="settings.xml"
+Content-Type: */*
+
+< D:/settings.xml
+--WebAppBoundary--
+
+###
+GET http://localhost:8080/api/download
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTI0OTYxNzAxNTE0MzQyNDAwIiwicm9sZSI6NSwiZXhwIjoxNjkxMDQ1NDgwLCJncm91cE51bWJlciI6MSwiaWF0IjoxNjg4MzY3MDgwfQ.3J_gzfbn7W-xg9t88yNLK7hOaG1aYIqI98P9VsnqFmo

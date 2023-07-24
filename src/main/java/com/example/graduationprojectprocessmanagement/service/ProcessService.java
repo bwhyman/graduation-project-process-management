@@ -6,6 +6,7 @@ import com.example.graduationprojectprocessmanagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -26,19 +27,24 @@ public class ProcessService {
     }
 
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber, String processId) {
-        return processScoreRepository.findByGroupNumberAndProcessId(groupNumber, processId).collectList();
+        return processScoreRepository.findByGroup(groupNumber, processId).collectList();
     }
 
-    public Mono<ProcessScore> addProcessScore(ProcessScore processScore) {
-        return processScoreRepository.save(processScore);
+    @Transactional
+    public Mono<Integer> updateProcessScore(String pid, String sid, String tid, float score) {
+        return processScoreRepository.findByProcessIdAndStudentId(pid, sid)
+                .flatMap(psid ->
+                        processScoreRepository.updateDetail(tid, psid, score).thenReturn(1)
+                ).switchIfEmpty(Mono.defer(() -> {
+                    String detail = """
+                            {"%s": %s}
+                            """;
+                    ProcessScore pt = ProcessScore.builder()
+                            .processId(pid)
+                            .studentId(sid)
+                            .detail(detail.formatted(tid, score))
+                            .build();
+                    return processScoreRepository.save(pt).thenReturn(1);
+                }));
     }
-
-    public Mono<List<ProcessScore>> listProcessScores(String pid, String tid) {
-        return processScoreRepository.findByProcessIdAndTeacherId(pid, tid).collectList();
-    }
-
-    public Mono<Integer> updateProcessScore(String psid, String detail) {
-        return processScoreRepository.updateDetail(psid, detail);
-    }
-
 }

@@ -3,6 +3,7 @@ package com.example.graduationprojectprocessmanagement.controller;
 import com.example.graduationprojectprocessmanagement.component.JWTComponent;
 import com.example.graduationprojectprocessmanagement.dox.User;
 import com.example.graduationprojectprocessmanagement.exception.Code;
+import com.example.graduationprojectprocessmanagement.service.StartTimeCache;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
 import com.example.graduationprojectprocessmanagement.vo.ResultVO;
@@ -13,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -39,13 +42,13 @@ public class LoginController {
                     response.getHeaders().add(RequestAttributeConstant.TOKEN, token);
 
                     String role = switch (u.getRole()) {
-                        case User.ROLE_STUDENT -> "Yo87M";
-                        case User.ROLE_TEACHER -> "nU0vt";
-                        case User.ROLE_ADMIN -> "ppYMg";
+                        case User.ROLE_STUDENT -> "zE1Ny";
+                        case User.ROLE_TEACHER -> "MjA5N";
+                        case User.ROLE_ADMIN -> "iaWF0";
                         default -> "";
                     };
                     response.getHeaders().add(RequestAttributeConstant.ROLE, role);
-                    return ResultVO.success(Map.of());
+                    return ResultVO.success(Map.of("user", u));
                 })
                 .defaultIfEmpty(ResultVO.error(Code.LOGIN_ERROR));
     }

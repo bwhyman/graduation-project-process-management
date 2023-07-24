@@ -33,8 +33,8 @@ public class UserService {
         return userRepository.findByRole(role).collectList();
     }
 
-    public Mono<List<User>> listUsers(int groupNumber, int role) {
-        return userRepository.findByGroupNumberAndRole(groupNumber, role).collectList();
+    public Mono<List<User>> listUsers(int role, int groupNumber) {
+        return userRepository.findByRoleAndGroupNumber(role, groupNumber).collectList();
     }
     @Transactional
     public Mono<Integer> updatePassword(String uid, String password) {
