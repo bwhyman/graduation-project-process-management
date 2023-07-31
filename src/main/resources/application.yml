@@ -38,8 +38,18 @@ spring:
   config:
     activate:
       on-profile: prod
-
+  r2dbc:
+    url: 'r2dbcs:mysql://${dhost}/graduation_project_process_management'
+    username: ${dusername}
+    password: ${dpassword}
+    pool:
+      max-size: 200
 
 my:
   secretkey: ${secretkey}
   upload: '/home/upload/'
+logging:
+  level:
+    root: warn
+    com:
+      example: info

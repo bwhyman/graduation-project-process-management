@@ -1,8 +1,10 @@
 package com.example.graduationprojectprocessmanagement.service;
 
+import com.example.graduationprojectprocessmanagement.dox.ProcessFile;
 import com.example.graduationprojectprocessmanagement.dox.User;
 import com.example.graduationprojectprocessmanagement.exception.Code;
 import com.example.graduationprojectprocessmanagement.exception.XException;
+import com.example.graduationprojectprocessmanagement.repository.ProcessFileRepository;
 import com.example.graduationprojectprocessmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +15,9 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SelectionService {
+public class StudentService {
     private final UserRepository userRepository;
+    private final ProcessFileRepository processFileRepository;
 
     @Transactional
     public Mono<User> addSelection(String sid, String tid) {
@@ -32,5 +35,15 @@ public class SelectionService {
                             student.setStudent(teacherJSON.formatted(teacher.getId(), teacher.getName()));
                             return userRepository.save(student);
                         })));
+    }
+
+    @Transactional
+    public Mono<ProcessFile> addProcessFile(ProcessFile processFile) {
+        return processFileRepository.findByProcessIdAndStudentId(processFile.getProcessId(), processFile.getStudentId())
+                .flatMap(p -> {
+                    p.setDetail(processFile.getDetail());
+                    return processFileRepository.save(p);
+                })
+                .switchIfEmpty(Mono.defer(() -> processFileRepository.save(processFile)));
     }
 }

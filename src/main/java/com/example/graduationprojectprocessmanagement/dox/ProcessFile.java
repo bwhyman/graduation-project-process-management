@@ -15,25 +15,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Process {
-    public static final String TUTOR = "AsImV";
-    public static final String REVIEW = "zg0NS";
-
+public class ProcessFile {
     @Id
     @CreatedBy
     private String id;
-    private String name;
-    // json
-    private String items;
-    private int point;
-    private String auth;
-    // json
-    private String studentAttach;
+    private String detail;
+    private String studentId;
+    private String processId;
     @ReadOnlyProperty
     @JsonIgnore
     private LocalDateTime insertTime;
     @ReadOnlyProperty
     @JsonIgnore
     private LocalDateTime updateTime;
-
 }

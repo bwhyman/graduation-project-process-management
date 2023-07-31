@@ -8,9 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
-public class SelectionServiceTest {
+public class StudentServiceTest {
     @Autowired
-    private SelectionService selectionService;
+    private StudentService studentService;
     @Autowired
     private UserService userService;
 
@@ -30,10 +30,10 @@ public class SelectionServiceTest {
         assert s3 != null;
         assert s4 != null;
 
-        selectionService.addSelection(s1.getId(), t1.getId()).block();
-        selectionService.addSelection(s2.getId(), t1.getId()).block();
-        selectionService.addSelection(s3.getId(), t2.getId()).block();
-        selectionService.addSelection(s4.getId(), t2.getId()).block();
+        studentService.addSelection(s1.getId(), t1.getId()).block();
+        studentService.addSelection(s2.getId(), t1.getId()).block();
+        studentService.addSelection(s3.getId(), t2.getId()).block();
+        studentService.addSelection(s4.getId(), t2.getId()).block();
     }
 
 }

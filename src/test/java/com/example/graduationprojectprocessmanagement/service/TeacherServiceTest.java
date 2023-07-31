@@ -8,20 +8,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
-public class ProcessServiceTest {
+public class TeacherServiceTest {
     @Autowired
-    private ProcessService processService;
+    private TeacherService teacherService;
     @Autowired
     private UserService userService;
 
 
     @Test
     public void listProcessScoresTest() {
-        processService.listProcessScores(1, "1069607508454658048").doOnSuccess(ps -> {
+        teacherService.listProcessScores(1, "1069607508454658048").doOnSuccess(ps -> {
             for (ProcessScore p : ps) {
                 log.debug(p.toString());
             }
         }).block();
     }
-
 }

@@ -4,7 +4,6 @@ import com.example.graduationprojectprocessmanagement.dox.Process;
 import com.example.graduationprojectprocessmanagement.dox.User;
 import com.example.graduationprojectprocessmanagement.dto.StudentDTO;
 import com.example.graduationprojectprocessmanagement.service.AdminService;
-import com.example.graduationprojectprocessmanagement.service.ProcessService;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.ResultVO;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.Map;
 @RequestMapping("/api/admin/")
 public class AdminController {
     private final AdminService adminService;
-    private final ProcessService processService;
     private final UserService userService;
 
     @PutMapping("starttime/{time}")
@@ -66,9 +64,14 @@ public class AdminController {
     @PostMapping("processes")
     public Mono<ResultVO> postProcess(@RequestBody Process process) {
         return adminService.addProcess(process)
-                .flatMap(r -> processService.listProcesses())
+                .flatMap(r -> userService.listProcesses())
                 .map(processes -> ResultVO.success(Map.of("processes", processes)));
+    }
 
+    @GetMapping("processes")
+    public Mono<ResultVO> getProcesses(){
+        return adminService.listProcesses()
+                .map(processes -> ResultVO.success(Map.of("processes", processes)));
     }
 
     @PutMapping("passwords/{number}")
@@ -76,8 +79,8 @@ public class AdminController {
         return adminService.updatePassword(number).thenReturn(ResultVO.success(Map.of()));
     }
 
-    @GetMapping("info")
-    public Mono<ResultVO> getInfo() {
-        return Mono.just(ResultVO.success(Map.of("test", "test")));
+    @PostMapping("resetdata")
+    public Mono<ResultVO> postData() {
+        return adminService.updateData().thenReturn(ResultVO.success(Map.of()));
     }
 }

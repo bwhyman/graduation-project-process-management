@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class ProcessScoreDTO {
     private String studentId;
     private String processId;
+    private String teacherName;
     private Float score;
 }

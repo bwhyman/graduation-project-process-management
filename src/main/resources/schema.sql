@@ -5,8 +5,8 @@ create table if not exists `user`
     number       varchar(15)  not null,
     password     varchar(65)  not null,
     description  varchar(600) null,
-    role         int          not null,
-    group_number int          null,
+    role         tinyint      not null,
+    group_number tinyint      null,
     student      json         null comment '{"teacherId", "teacherName", "queueNumber", "projectTitle"}',
     teacher      json         null comment '{"count", "total"}',
     insert_time  datetime     not null default current_timestamp,
@@ -19,13 +19,15 @@ create table if not exists `user`
 
 create table if not exists `process`
 (
-    id          char(19)    not null primary key,
-    name        varchar(20) not null,
-    items       json        not null comment '[{"number", "name", "point", "description"}]',
-    point       int         not null,
-    auth        int         not null,
-    insert_time datetime    not null default current_timestamp,
-    update_time datetime    not null default current_timestamp on update current_timestamp
+    id             char(19)    not null primary key,
+    name           varchar(20) not null,
+    items          json        null comment '[{"number", "name", "point", "description"}]',
+    point          tinyint     null,
+    auth           char(5)     not null,
+    student_attach json        null comment '[{"name", "ext"}]',
+    insert_time    datetime    not null default current_timestamp,
+    update_time    datetime    not null default current_timestamp on update current_timestamp
+
 );
 
 create table if not exists `process_score`
@@ -33,7 +35,7 @@ create table if not exists `process_score`
     id          char(19) not null primary key,
     student_id  char(19) not null,
     process_id  char(19) not null,
-    detail      json     not null comment '{"teacherId": score}',
+    detail      json     not null comment '[{"teacherId", "teacherName","score"}]',
     insert_time datetime not null default current_timestamp,
     update_time datetime not null default current_timestamp on update current_timestamp,
 
@@ -42,15 +44,12 @@ create table if not exists `process_score`
 
 create table if not exists `process_file`
 (
-    id           char(19)    not null primary key,
-    name         varchar(20) not null,
-    ext          varchar(20) null,
-    detail       varchar(60) null,
-    group_number int         not null,
-    student_id   char(19)    not null,
-    process_id   char(19)    not null,
-    insert_time  datetime    not null default current_timestamp,
-    update_time  datetime    not null default current_timestamp on update current_timestamp,
+    id          char(19)    not null primary key,
+    detail      varchar(60) null,
+    student_id  char(19)    not null,
+    process_id  char(19)    not null,
+    insert_time datetime    not null default current_timestamp,
+    update_time datetime    not null default current_timestamp on update current_timestamp,
 
-    index (process_id, group_number, student_id)
+    unique (process_id, student_id)
 );

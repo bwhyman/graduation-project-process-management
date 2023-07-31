@@ -24,6 +24,8 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     Flux<User> findByRoleAndGroupNumber(int role, int groupNumber);
 
+    Flux<User> findByGroupNumber(int groupNumber);
+
     @Query("""
             select * from user u where u.student->>'$.teacherId'=:tid
             """)
@@ -40,4 +42,21 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
             update user u set u.password=:password where u.number=:number;
             """)
     Mono<Integer> updatePasswordByNumber(String number, String password);
+
+    @Query("""
+            select * from user u where u.student is null and role=1;
+            """)
+    Flux<User> findAllUnSelected();
+
+    @Modifying
+    @Query("""
+            update user u set u.student=null where u.role=1;
+            """)
+    Mono<Integer> updateStudentData();
+
+    @Modifying
+    @Query("""
+            update user u set u.teacher=json_set(u.teacher, '$.count', 0) where u.role=5;
+            """)
+    Mono<Integer> updateTeacherData();
 }

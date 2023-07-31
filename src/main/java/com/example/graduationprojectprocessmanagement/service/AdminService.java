@@ -96,4 +96,12 @@ public class AdminService {
     public Mono<Integer> updatePassword(String number) {
         return userRepository.updatePasswordByNumber(number, passwordEncoder.encode(number));
     }
+
+    @Transactional
+    public Mono<Void> updateData() {
+        Mono<Integer> sM = userRepository.updateStudentData();
+        Mono<Integer> tM = userRepository.updateTeacherData();
+        return Mono.when(sM, tM).then();
+    }
+
 }

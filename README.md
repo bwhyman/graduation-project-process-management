@@ -67,6 +67,7 @@
 01-李明-开题报告
 
 ### 转组 & 创建新组
+
 支持将学生/评审转入不同的组。
 
 需要为二次答辩学生创建新组。
@@ -106,8 +107,78 @@ index ((cast(student ->> '$.teacherId' as char(19)) collate utf8mb4_bin))
 ```sql
 select * from user u where u.student->>'$.teacherId'='1069607508454658048';
 ```
+
+json_arrayagg()函数，将字段转为json数组。
+
+```sql
+select ps.id, 
+       json_arrayagg(json_object('teahcerId', ps.teacher_id, 'processId', ps.process_id, 'score', ps.score)) as json
+from process_score ps group by ps.id;
+```
+
+全表扫描，查询所有导师已选数量
+
+```sql
+select u.name, count(u.id) as count, u.teacher -> '$.total' as total
+from user u
+         join user u2
+where u2.student ->> '$.teacherId' = u.id
+group by u.id;
+```
+
+指定导师已选数量
+
+```sql
+select u.id, u.name, count(u.id) as count, u.teacher -> '$.total' as total
+from user u
+         join user u2
+where u.id = :tid
+  and u2.student ->> '$.teacherId' = u.id
+group by u.id
+having count < total;
+```
+
+更新时使用表锁确保查询数据的准确性，但执行效率？
+
+```sql
+update user u, (select u.id, count(u.id) as count, u.teacher -> '$.total' as total
+                from user u
+                         join user u2
+                where u.id = :tid
+                  and u2.student ->> '$.teacherId' = u.id
+                group by u.id
+                having count < total) u2
+set u.student=json_object('teacherId', :tid)
+where u.id = :sid;
+```
+
 JSON_TABLE()函数，可将json字段作为table处理，从数组中提取属性值。不知道执行效率怎样。  
 concat()函数，拼接字符串。
+
+添加/更新数组中元素。不存在时，在数组中添加；存在，则更新。不建议处理过大的json数据。  
+使用isnull()函数替代on连接，可在null时将索引置于最后。
+```sql
+update process_score pt
+    join JSON_TABLE(
+            pt.detail,
+            '$[*]'
+            columns (
+                `id` for ordinality,
+                `tid` char(19) path '$.teacherId'
+                )
+        ) jt
+set pt.detail=json_set(
+    pt.detail,
+   if(isnull(json_search(pt.detail, 'one', '1127183851567038464')),
+      concat('$[', json_length(pt.detail), ']'),
+      json_unquote(replace(json_search(pt.detail, 'one', '1127183851567038464', null, '$**.teacherId'), '.teacherId',
+                           ''))),
+                   json_object('teacherId', '1127183851567038464', 'score', 2))
+where pt.id = '1133711988347621376';
+```
+
+可在json table中查询，但属于on，查询结果为空时无法更新
+
 ```sql
 update process_test ps join JSON_TABLE(
         ps.detail,
@@ -119,14 +190,7 @@ update process_test ps join JSON_TABLE(
     ) jt on jt.tid = '1127183851567038464'
 set ps.detail = json_set(ps.detail, concat('$[', jt.id - 1, ']'),
                          json_object('teacherId', '1127183851567038464', 'score', 3))
-where ps.student_id = '1127183678753325056' and ps.process_id = '1129448465769680896';
-```
-
-json_arrayagg()函数，将字段转为json对象。
-```sql
-select ps.id, 
-       json_arrayagg(json_object('teahcerId', ps.teacher_id, 'processId', ps.process_id, 'score', ps.score)) as json
-from process_score ps group by ps.id;
+where pt.id = '1133711988347621376';
 ```
 
 #### Batch Update
@@ -188,7 +252,9 @@ public Mono<ResultVO> login() {
                       .defaultIfEmpty();
 }
 ```
+
 当返回空时
+
 ```java
 .switchIfEmpty(Mono.defer(() -> {}));
 ```
@@ -206,3 +272,6 @@ MySQL索引类型与传入参数类型不匹配可能使索引失效。
 当索引类型为数字，传入数字或字符串MySQL均可完成隐形转换命中索引；  
 但当索引类型为字符串，如果传入数字类型参数将无法命中索引。  
 因此查询使类型一定要匹配。  
+
+#### Docker
+终于实现基于healthcheck检测容器中程序运行状况，从而按顺序启动容器。
