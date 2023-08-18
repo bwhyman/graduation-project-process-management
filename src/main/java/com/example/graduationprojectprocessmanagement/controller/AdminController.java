@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +24,9 @@ public class AdminController {
     private final UserService userService;
 
     @PutMapping("starttime/{time}")
-    public Mono<ResultVO> putStartTime(@PathVariable String time, @RequestAttribute("uid") String uid) {
-        LocalDateTime startTime = LocalDateTime.parse(time);
-        return adminService.addStartTime(startTime, uid)
-                .then(Mono.just(ResultVO.success(Map.of("startTime", startTime))));
+    public Mono<ResultVO> putStartTime(@PathVariable String time) {
+        return adminService.updateStartTime(time)
+                .then(Mono.just(ResultVO.success(Map.of("startTime", time))));
     }
 
     @PostMapping("teachers")
@@ -83,4 +81,11 @@ public class AdminController {
     public Mono<ResultVO> postData() {
         return adminService.updateData().thenReturn(ResultVO.success(Map.of()));
     }
+
+    @PatchMapping("groups")
+    public Mono<ResultVO> patchGroup(@RequestBody User user) {
+        return adminService.updateGroup(user.getNumber(), user.getGroupNumber())
+                .thenReturn(ResultVO.success(Map.of()));
+    }
+
 }

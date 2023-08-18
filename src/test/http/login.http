@@ -3,8 +3,8 @@ POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
-  "number": "2001",
-  "password": "2001"
+  "number": "admin",
+  "password": "admin"
 }
 ### 学生
 POST http://localhost:8080/api/login

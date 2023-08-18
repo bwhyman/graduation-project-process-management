@@ -8,6 +8,8 @@ import com.example.graduationprojectprocessmanagement.repository.UserRepository;
 import io.r2dbc.spi.ConnectionFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,15 +27,12 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final ProcessRepository processRepository;
     private final ConnectionFactory connectionFactory;
-    private final StartTimeCache startTimeCache;
 
     @Transactional
-    public Mono<Void> addStartTime(LocalDateTime time, String uid) {
-        return userRepository.findById(uid).flatMap(admin -> {
-            startTimeCache.setStartTime(time);
-            admin.setDescription(time.toString());
-            return userRepository.save(admin).then();
-        });
+    @CachePut("starttime")
+    public Mono<LocalDateTime> updateStartTime(String time) {
+        return userRepository.updateStartTime(time)
+                .thenReturn(LocalDateTime.parse(time)).cache();
     }
     @Transactional
     public Mono<Void> addUsers(List<User> users, int role) {
@@ -49,16 +48,12 @@ public class AdminService {
     }
 
     @Transactional
+    @CacheEvict(value = "processes", allEntries = true)
     public Mono<Process> addProcess(Process process) {
         return processRepository.save(process);
     }
 
-    /**
-     * 参数，projectTitle, number
-     *
-     * @param studentDTOs
-     * @return
-     */
+    // 参数，projectTitle, number
     @Transactional
     public Mono<Void> updateProjectTitles(List<StudentDTO> studentDTOs) {
         String sql = """
@@ -72,16 +67,11 @@ public class AdminService {
         }).then();
     }
 
-    /**
-     * 参数，number, groupNumber, queueNumber
-     *
-     * @param studentDTOs
-     * @return
-     */
+    // 参数，number, groupNumber, queueNumber
     @Transactional
     public Mono<Void> updateStudentsGroup(List<StudentDTO> studentDTOs) {
         String sql = """
-                update user u set u.group_number=?, u.student=json_set(u.student, '$.queueNumber', ?) 
+                update user u set u.group_number=?, u.student=json_set(u.student, '$.queueNumber', ?)
                 where u.number=?
                 """;
         return DatabaseClient.create(connectionFactory).sql(sql).filter(statement -> {
@@ -102,6 +92,12 @@ public class AdminService {
         Mono<Integer> sM = userRepository.updateStudentData();
         Mono<Integer> tM = userRepository.updateTeacherData();
         return Mono.when(sM, tM).then();
+    }
+
+    @Transactional
+    @CacheEvict(value = "groupusers", allEntries = true)
+    public Mono<Integer> updateGroup(String number, int g) {
+        return userRepository.updateGroup(number, g);
     }
 
 }

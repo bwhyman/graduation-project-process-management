@@ -46,9 +46,9 @@ public class JWTComponent {
     }*/
 
     public Mono<DecodedJWT> decode(String token) {
-        DecodedJWT decodedJWT;
         try {
-            decodedJWT = JWT.require(Algorithm.HMAC256(secretkey)).build().verify(token);
+            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secretkey)).build().verify(token);
+            return Mono.just(decodedJWT);
         } catch (TokenExpiredException | SignatureVerificationException | JWTDecodeException e) {
             Code code = Code.FORBIDDEN;
             if (e instanceof TokenExpiredException) {
@@ -56,6 +56,5 @@ public class JWTComponent {
             }
             return Mono.error(XException.builder().code(code).build());
         }
-       return Mono.just(decodedJWT);
     }
 }

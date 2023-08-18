@@ -17,14 +17,16 @@ import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Component
 @Slf4j
 @Order(1)
 @RequiredArgsConstructor
 public class LoginFilter implements WebFilter {
 
-    PathPattern includes = new PathPatternParser().parse("/api/**");
-    PathPattern excludes = new PathPatternParser().parse("/api/login");
+    private final PathPattern includes = new PathPatternParser().parse("/api/**");
+    private final List<PathPattern> excludesS = List.of(new PathPatternParser().parse("/api/login"));
 
     private final JWTComponent jwtComponent;
     private final ResponseHelper responseHelper;
@@ -32,11 +34,11 @@ public class LoginFilter implements WebFilter {
     @NonNull
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
-
         ServerHttpRequest request = exchange.getRequest();
-        // 允许非数据接口请求。Swagger /swagger-ui/index.html
-        if (excludes.matches(request.getPath().pathWithinApplication())) {
-            return chain.filter(exchange);
+        for (PathPattern p : excludesS) {
+            if (p.matches(request.getPath().pathWithinApplication())) {
+                return chain.filter(exchange);
+            }
         }
         if (!includes.matches(request.getPath().pathWithinApplication())) {
             return responseHelper.response(Code.BAD_REQUEST, exchange);

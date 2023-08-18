@@ -6,11 +6,13 @@ import com.example.graduationprojectprocessmanagement.repository.ProcessReposito
 import com.example.graduationprojectprocessmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,14 +38,22 @@ public class UserService {
         return userRepository.findByRole(role).collectList();
     }
 
+    @Cacheable(value = "groupusers", key = "{#role-#groupNumber}")
     public Mono<List<User>> listUsers(int role, int groupNumber) {
-        return userRepository.findByRoleAndGroupNumber(role, groupNumber).collectList();
+        return userRepository.findByRoleAndGroupNumber(role, groupNumber).collectList().cache();
     }
     @Transactional
     public Mono<Integer> updatePassword(String uid, String password) {
         return userRepository.updatePasswordById(uid, passwordEncoder.encode(password));
     }
+    @Cacheable("processes")
     public Mono<List<Process>> listProcesses() {
-        return processRepository.findAll().collectList();
+        return processRepository.findAll().collectList().cache();
+    }
+
+    @Cacheable("starttime")
+    public Mono<LocalDateTime> getStartTime() {
+        return userRepository.findStartTime()
+                .map(LocalDateTime::parse).cache();
     }
 }

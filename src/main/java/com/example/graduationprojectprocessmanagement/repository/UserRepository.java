@@ -14,6 +14,10 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
     Mono<User> findByNumber(String number);
 
     @Modifying
+    @Query("update user u set u.description=:time where u.number='admin'")
+    Mono<Integer> updateStartTime(String time);
+
+    @Modifying
     @Query("""
             update user u set u.teacher=json_set(u.teacher, '$.count', cast(u.teacher -> '$.count' + 1 as unsigned))
             where u.id=:tid and (u.teacher -> '$.total' - u.teacher -> '$.count' > 0);
@@ -23,8 +27,6 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
     Flux<User> findByRole(int role);
 
     Flux<User> findByRoleAndGroupNumber(int role, int groupNumber);
-
-    Flux<User> findByGroupNumber(int groupNumber);
 
     @Query("""
             select * from user u where u.student->>'$.teacherId'=:tid
@@ -59,4 +61,13 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
             update user u set u.teacher=json_set(u.teacher, '$.count', 0) where u.role=5;
             """)
     Mono<Integer> updateTeacherData();
+
+    @Modifying
+    @Query("""
+            update user u set u.group_number=:g where u.number=:number;
+            """)
+    Mono<Integer> updateGroup(String number, int g);
+
+    @Query("select u.description from user u where u.number='admin'")
+    Mono<String> findStartTime();
 }

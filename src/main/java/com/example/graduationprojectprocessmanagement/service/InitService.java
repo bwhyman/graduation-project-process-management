@@ -20,7 +20,6 @@ public class InitService {
 
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
-    private final StartTimeCache startTimeCache;
 
     @Transactional
     @EventListener(classes = ApplicationReadyEvent.class)
@@ -38,14 +37,9 @@ public class InitService {
                                 .role(User.ROLE_ADMIN)
                                 .description(startTime.toString())
                                 .build();
-                        startTimeCache.setStartTime(startTime);
                         return userRepository.save(admin).then();
                     }
-                    return userRepository.findByNumber(number)
-                            .doOnSuccess(admin -> {
-                                LocalDateTime startTime = LocalDateTime.parse(admin.getDescription());
-                                startTimeCache.setStartTime(startTime);
-                            });
-                }).then();
+                    return Mono.empty();
+                });
     }
 }
