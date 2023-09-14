@@ -15,6 +15,7 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
             select ps.id as id,
                 ps.student_id as student_id,
                 ps.process_id as process_id,
+                ps.teacher_id as teacher_id,
                 ps.detail as detail
             from process_score ps, user u
             where ps.student_id=u.id and u.group_number=:groupNumber and ps.process_id=:pid;
@@ -40,23 +41,7 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
 
     @Modifying
     @Query("""
-            update process_score ps
-                join JSON_TABLE(
-                        ps.detail,
-                        '$[*]'
-                        columns (
-                            `id` for ordinality,
-                            `tid` char(19) path '$.teacherId'
-                            )
-                    ) jt
-            set ps.detail=json_set(
-                    ps.detail,
-                    if(isnull(json_search(ps.detail, 'one', :tid)),
-                       concat('$[', json_length(ps.detail), ']'),
-                       json_unquote(replace(json_search(ps.detail, 'one', :tid, null, '$**.teacherId'), '.teacherId', ''))),
-                    json_object('teacherId', :tid, 'teacherName', :tname,'score', :score)
-                )
-            where ps.id = :psid;
+            update process_score ps set ps.detail=:detail where ps.id=:psid
             """)
-    Mono<Integer> updateDetail(String tid, String psid, String tname, float score);
+    Mono<Integer> updateDetail(String psid, String detail);
 }

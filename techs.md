@@ -185,5 +185,16 @@ MySQL索引类型与传入参数类型不匹配可能使索引失效。
 但当索引类型为字符串，如果传入数字类型参数将无法命中索引。  
 因此查询使类型一定要匹配。
 
+### MySQL JSON Multi-Valued Indexes
+
+[MySQL Multi-Valued Indexes](https://dev.mysql.com/doc/refman/8.0/en/create-index.html#create-index-multi-valued)
+
+json数组字段声明多值索引，适合多标签声明及检索。  
+支持复合索引。  
+限制较多，当前支持命中索引的函数：member of，等3个。
+```sql
+INDEX (( cast(group_number AS unsigned array) )),
+```
+
 ### Docker
 终于实现基于healthcheck检测容器中程序运行状况，从而按顺序启动容器。

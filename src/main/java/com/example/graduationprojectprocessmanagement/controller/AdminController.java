@@ -34,6 +34,12 @@ public class AdminController {
         return adminService.addUsers(users, User.ROLE_TEACHER).thenReturn(ResultVO.success(Map.of()));
     }
 
+    @GetMapping("teachers")
+    public Mono<ResultVO> getTeachers() {
+        return userService.listUsers(User.ROLE_TEACHER)
+                .map(users -> ResultVO.success(Map.of("teachers", users)));
+    }
+
     @PostMapping("students")
     public Mono<ResultVO> postStudents(@RequestBody List<User> users) {
         return adminService.addUsers(users, User.ROLE_STUDENT).thenReturn(ResultVO.success(Map.of()));
@@ -82,10 +88,10 @@ public class AdminController {
         return adminService.updateData().thenReturn(ResultVO.success(Map.of()));
     }
 
+    // 修改组
     @PatchMapping("groups")
     public Mono<ResultVO> patchGroup(@RequestBody User user) {
         return adminService.updateGroup(user.getNumber(), user.getGroupNumber())
                 .thenReturn(ResultVO.success(Map.of()));
     }
-
 }

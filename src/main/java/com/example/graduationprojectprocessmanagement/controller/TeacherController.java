@@ -1,8 +1,8 @@
 package com.example.graduationprojectprocessmanagement.controller;
 
 import com.example.graduationprojectprocessmanagement.dox.Process;
+import com.example.graduationprojectprocessmanagement.dox.ProcessScore;
 import com.example.graduationprojectprocessmanagement.dox.User;
-import com.example.graduationprojectprocessmanagement.dto.ProcessScoreDTO;
 import com.example.graduationprojectprocessmanagement.service.TeacherService;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
@@ -15,14 +15,12 @@ import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -74,16 +72,16 @@ public class TeacherController {
     @PostMapping("processscores/types/{auth}")
     public Mono<ResultVO> postProcess(
             @PathVariable String auth,
-            @RequestBody ProcessScoreDTO processScoreDTO,
+            @RequestBody ProcessScore ps,
             @RequestAttribute(RequestAttributeConstant.UID) String tid,
             @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
-        return teacherService.updateProcessScore(processScoreDTO, tid)
+        return teacherService.updateProcessScore(ps)
                 .then(Mono.defer(() -> {
                     if (auth.equals(Process.REVIEW)) {
-                        return teacherService.listProcessScores(g, processScoreDTO.getProcessId())
+                        return teacherService.listProcessScores(g, ps.getProcessId())
                                 .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
                     }
-                    return teacherService.listProcessScores(tid, processScoreDTO.getProcessId())
+                    return teacherService.listProcessScores(tid, ps.getProcessId())
                             .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
                 }));
     }
@@ -93,7 +91,7 @@ public class TeacherController {
                                           @PathVariable String auth,
                                           @RequestAttribute(RequestAttributeConstant.UID) String tid,
                                           @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
-        if(auth.equals(Process.REVIEW)) {
+        if (auth.equals(Process.REVIEW)) {
             return teacherService.listProcessFiles(g, pid)
                     .map(pf -> ResultVO.success(Map.of("processFiles", pf)));
         }
@@ -125,4 +123,14 @@ public class TeacherController {
                 .map(users -> ResultVO.success(Map.of("students", users)));
     }
 
+    @GetMapping("teachers")
+    public Mono<ResultVO> getTeachers() {
+        return userService.listUsers(User.ROLE_TEACHER)
+                .map(users -> ResultVO.success(Map.of("teachers", users)));
+    }
+    @GetMapping("processscores")
+    public Mono<ResultVO> getProcessScores() {
+        return teacherService.listProcessScores()
+                .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+    }
 }

@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public Mono<List<User>> listUsers(int role) {
-        return userRepository.findByRole(role).collectList();
+        return userRepository.findByRoleOrderById(role).collectList();
     }
 
     @Cacheable(value = "groupusers", key = "{#role-#groupNumber}")

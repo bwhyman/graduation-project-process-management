@@ -23,17 +23,21 @@
 
 ```json
 {
-  "name": "开题",
-  "auth": 2,
-  "items": "[\n  {\n    \"number\": 0,\n    \"name\": \"2.1\",\n    \"point\": 50,\n    \"description\": \"选题依据（选题意义，国内外动态，初步设想及创新点等）及可行性论述。\"\n  },\n  {\n    \"number\": 1,\n    \"name\": \"3.3\",\n    \"point\": 50,\n    \"description\": \"开题答辩过程中能否清楚陈述自己对毕业设计题目的深入理解，表达思路是否清晰，重点是否突出，能否正确回答与毕设工作相关的提问，开题报告结构组织是否清晰合理、行文语言是否流畅准确、撰写格式是否符合规范要求。\"\n  }\n]"
+  "name": "开题答辩",
+  "auth": "zg0NS",
+  "items": "[{\"number\": 0, \"name\": \"选题依据\", \"point\": 50}, {\"number\": 1, \"name\": \"设计方案\", \"point\": 25}, {\"number\": 2, \"name\": \"答辩过程\", \"point\": 25}]"
 }
 ```
 
 ```json
+[{"number": 0, "name": "选题依据", "point": 50}, {"number": 1, "name": "设计方案", "point": 25}, {"number": 2, "name": "答辩过程", "point": 25}]
+```
+
+```json
 {
-  "name": "期中",
-  "auth": 1,
-  "items": "[\n    {\n      \"number\": 0,\n      \"point\": 50,\n      \"name\": \"5.1\",\n      \"description\": \"期中-1\"\n    },\n    {\n      \"number\": 1,\n      \"point\": 50,\n      \"name\": \"5.5\",\n      \"description\": \"期中-2\"\n    }\n  ]"
+  "name": "期中检查",
+  "auth": "AsImV",
+  "items": "[{\"number\": 0, \"point\": 50, \"name\": \"软件工程\"},{\"number\": 1, \"point\": 50, \"name\": \"工程管理\"}]"
 }
 ```
 
@@ -44,7 +48,6 @@
   {
     "name": "wang-1",
     "number": "202001"
-
   },
   {
     "name": "wang-2",
@@ -53,7 +56,6 @@
   {
     "name": "zhang-1",
     "number": "202003"
-
   },
   {
     "name": "zhang-2",
@@ -88,8 +90,36 @@
 
 ```json
 {
-  "processId": "1070382937616666624",
-  "studentId": "1070387139730460672",
-  "score" 80: 
+  "studentId": "1135242441437204480",
+  "teacherId": "1135242464761729024",
+  "processId": "1135247973229252608",
+  "detail": "{\"teacherName\": \"李琰\", \"score\": 82, \"detail\": [{\"number\": 0, \"score\": 80}, {\"number\": 1, \"score\": 84}]}"
 }
 ```
+
+```json
+{
+  "teacherName": "李琰",
+  "score": 82,
+  "detail": [
+    {
+      "number": 0,
+      "score": 80
+    },
+    {
+      "number": 1,
+      "score": 84
+    }
+  ]
+}
+```
+
+比例
+
+开题答辩：20；选题依据：50；设计方案：25；答辩过程：25
+期中检查：20；软件工程：50；工程管理：50
+毕业答辩：50；综合利用：10；相关知识：20；解决问题：10；完整详实：40；答辩过程：20
+毕业演示：10；系统演示：100
+
+
+

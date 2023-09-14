@@ -20,6 +20,7 @@ public class ProcessScore {
     @CreatedBy
     private String id;
     private String studentId;
+    private String teacherId;
     private String processId;
     private String detail;
     @ReadOnlyProperty

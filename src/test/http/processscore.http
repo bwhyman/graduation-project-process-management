@@ -1,0 +1,25 @@
+###
+GET http://localhost:8080/api/teacher/processes/1135247973229252608/types/zg0NS
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTM1MjQyNDY0NzYxNzI5MDI0Iiwicm9sZSI6NSwiZXhwIjoxNjk2NTA4MjcxLCJncm91cE51bWJlciI6MSwiaWF0IjoxNjkzOTE2MjcxfQ.ksrcLvS_eHGhot2goon17kLqf6KRjhVEfyMFsmLuJws
+
+###
+POST http://localhost:8080/api/teacher/processscores/types/zg0NS
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTM1MjQyNDY0NzYxNzI5MDI0Iiwicm9sZSI6NSwiZXhwIjoxNjk2NTA4MjcxLCJncm91cE51bWJlciI6MSwiaWF0IjoxNjkzOTE2MjcxfQ.ksrcLvS_eHGhot2goon17kLqf6KRjhVEfyMFsmLuJws
+Content-Type: application/json
+
+{
+  "studentId": "1135242441437204480",
+  "teacherId": "1135242464761729024",
+  "processId": "1135247973229252608",
+  "detail": "{\"teacherName\": \"李琰\", \"score\": 82, \"detail\": [{\"number\": 0, \"score\": 80}, {\"number\": 1, \"score\": 84}]}"
+}
+### 更新
+POST http://localhost:8080/api/teacher/processscores/types/zg0NS
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTM1MjQyNDY0NzYxNzI5MDI0Iiwicm9sZSI6NSwiZXhwIjoxNjk2NTA4MjcxLCJncm91cE51bWJlciI6MSwiaWF0IjoxNjkzOTE2MjcxfQ.ksrcLvS_eHGhot2goon17kLqf6KRjhVEfyMFsmLuJws
+Content-Type: application/json
+
+{
+  "id": "1148597465340518400",
+  "processId": "1135247973229252608",
+  "detail": "{\"teacherName\": \"李琰\", \"score\": 82, \"detail\": [{\"number\": 0, \"score\": 80}, {\"number\": 1, \"score\": 84}]}"
+}

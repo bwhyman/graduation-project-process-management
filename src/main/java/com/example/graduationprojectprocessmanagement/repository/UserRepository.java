@@ -24,7 +24,7 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
             """)
     Mono<Integer> updateCount(String tid);
 
-    Flux<User> findByRole(int role);
+    Flux<User> findByRoleOrderById(int role);
 
     Flux<User> findByRoleAndGroupNumber(int role, int groupNumber);
 
