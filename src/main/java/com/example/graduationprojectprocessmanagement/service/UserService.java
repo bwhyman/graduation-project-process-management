@@ -38,7 +38,7 @@ public class UserService {
         return userRepository.findByRoleOrderById(role).collectList();
     }
 
-    @Cacheable(value = "groupusers", key = "{#role-#groupNumber}")
+    //@Cacheable(value = "groupusers", key = "{#role-#groupNumber}")
     public Mono<List<User>> listUsers(int role, int groupNumber) {
         return userRepository.findByRoleAndGroupNumber(role, groupNumber).collectList().cache();
     }
@@ -46,7 +46,7 @@ public class UserService {
     public Mono<Integer> updatePassword(String uid, String password) {
         return userRepository.updatePasswordById(uid, passwordEncoder.encode(password));
     }
-    @Cacheable("processes")
+    //@Cacheable("processes")
     public Mono<List<Process>> listProcesses() {
         return processRepository.findAll().collectList().cache();
     }

@@ -83,6 +83,24 @@ public class AdminService {
     }
 
     @Transactional
+    public Mono<Void> updateStudentsAll(List<StudentDTO> studentDTOs) {
+        String sql = """
+                update user u set u.group_number=?, u.student=json_set(u.student, '$.queueNumber', ?, '$.projectTitle', ?)
+                where u.number=?
+                """;
+        return DatabaseClient.create(connectionFactory).sql(sql).filter(statement -> {
+            for (StudentDTO s : studentDTOs) {
+                statement.bind(0, s.getGroupNumber())
+                        .bind(1, s.getQueueNumber())
+                        .bind(2, s.getProjectTitle())
+                        .bind(3, s.getNumber())
+                        .add();
+            }
+            return statement;
+        }).then();
+    }
+
+    @Transactional
     public Mono<Integer> updatePassword(String number) {
         return userRepository.updatePasswordByNumber(number, passwordEncoder.encode(number));
     }

@@ -1,6 +1,5 @@
 package com.example.graduationprojectprocessmanagement.controller;
 
-import com.example.graduationprojectprocessmanagement.dox.Process;
 import com.example.graduationprojectprocessmanagement.dox.User;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
@@ -23,11 +22,5 @@ public class UserController {
     public Mono<ResultVO> postPassword(@RequestBody User user, @RequestAttribute(RequestAttributeConstant.UID) String uid) {
         return userService.updatePassword(uid, user.getPassword())
                 .thenReturn(ResultVO.success(Map.of()));
-    }
-
-    @GetMapping("processes")
-    public Mono<ResultVO> getProcesses() {
-        return userService.listProcesses()
-                .map(processes -> ResultVO.success(Map.of("processes", processes)));
     }
 }

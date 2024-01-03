@@ -22,6 +22,7 @@ public class ProcessFile {
     private String detail;
     private String studentId;
     private String processId;
+    private Integer number;
     @ReadOnlyProperty
     @JsonIgnore
     private LocalDateTime insertTime;

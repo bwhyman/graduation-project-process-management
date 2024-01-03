@@ -94,4 +94,9 @@ public class AdminController {
         return adminService.updateGroup(user.getNumber(), user.getGroupNumber())
                 .thenReturn(ResultVO.success(Map.of()));
     }
+
+    @PostMapping("students/all")
+    public Mono<ResultVO> postStudentsALl(@RequestBody List<StudentDTO> studentDTOs) {
+        return adminService.updateStudentsAll(studentDTOs).thenReturn(ResultVO.success(Map.of()));
+    }
 }

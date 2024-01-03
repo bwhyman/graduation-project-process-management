@@ -60,4 +60,7 @@ public class TeacherService {
     public Mono<List<ProcessScore>> listProcessScores() {
         return processScoreRepository.findAll().collectList();
     }
+    public Mono<List<ProcessScore>> listProcessScores(int groupNumber) {
+        return processScoreRepository.findByGroup(groupNumber).collectList();
+    }
 }

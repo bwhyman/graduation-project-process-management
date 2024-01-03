@@ -10,10 +10,11 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ProcessFileRepository extends ReactiveCrudRepository<ProcessFile, String> {
 
-    Mono<ProcessFile> findByProcessIdAndStudentId(String pid, String sid);
+    Mono<ProcessFile> findByProcessIdAndStudentIdAndNumber(String pid, String sid, int number);
 
     @Query("""
-            select pf.id as id, pf.detail as detail, pf.student_id as student_id, pf.process_id as process_id
+            select pf.id as id, pf.detail as detail, pf.student_id as student_id, pf.process_id as process_id,
+            pf.number as number
             from process_file pf, user u
             where pf.student_id=u.id and u.group_number=:group and pf.process_id=:pid;
             """)
@@ -27,4 +28,7 @@ public interface ProcessFileRepository extends ReactiveCrudRepository<ProcessFil
             and u.student ->> '$.teacherId'=:tid;
             """)
     Flux<ProcessFile> findByTeacher(String pid, String tid);
+
+    @Query("select pf.id, pf.number from process_file pf where pf.student_id=:sid and pf.process_id=:pid")
+    Flux<ProcessFile> findByStudentId(String pid, String sid);
 }

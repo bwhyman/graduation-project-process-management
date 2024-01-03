@@ -23,8 +23,6 @@ import reactor.core.publisher.Mono;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -43,18 +41,24 @@ public class TeacherController {
                 .map(students -> ResultVO.success(Map.of("students", students)));
     }
 
-    @GetMapping("/infos")
-    public Mono<ResultVO> getGroupStudents(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g,
-                                           @RequestAttribute(RequestAttributeConstant.UID) String tid) {
-        Map<String, Object> m = new HashMap<>();
-        Mono<List<User>> sM = userService.listUsers(User.ROLE_STUDENT, g)
-                .doOnSuccess(users -> m.put("students", users));
-        Mono<List<User>> tM = userService.listUsers(User.ROLE_TEACHER, g)
-                .doOnSuccess(users -> m.put("teachers", users));
-        Mono<List<User>> tuM = userService.listStudents(tid)
-                .doOnSuccess(users -> m.put("tutorStudents", users));
-        return Mono.when(sM, tM, tuM).thenReturn(ResultVO.success(m));
+    @GetMapping("students/group")
+    public Mono<ResultVO> getGroupStudents(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
+        return userService.listUsers(User.ROLE_STUDENT, g)
+                .map(users -> ResultVO.success(Map.of("students", users)));
     }
+
+    @GetMapping("students/tutor")
+    public Mono<ResultVO> getTutorStudents(@RequestAttribute(RequestAttributeConstant.UID) String tid) {
+        return userService.listStudents(tid)
+                .map(users -> ResultVO.success(Map.of("students", users)));
+    }
+
+    @GetMapping("teachers/group")
+    public Mono<ResultVO> getGroupTeachers(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
+        return userService.listUsers(User.ROLE_TEACHER, g)
+                .map(users -> ResultVO.success(Map.of("teachers", users)));
+    }
+
 
     @GetMapping("processes/{pid}/types/{auth}")
     public Mono<ResultVO> getProcesScore(@PathVariable String pid, @PathVariable String auth,
@@ -131,6 +135,18 @@ public class TeacherController {
     @GetMapping("processscores")
     public Mono<ResultVO> getProcessScores() {
         return teacherService.listProcessScores()
+                .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+    }
+    @GetMapping("processes")
+    public Mono<ResultVO> getProcesses() {
+        return userService.listProcesses()
+                .map(processes -> ResultVO.success(Map.of("processes", processes)));
+    }
+
+    // 统计小组内总成绩
+    @GetMapping("processscores/groups")
+    public Mono<ResultVO> getProcesses(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
+        return teacherService.listProcessScores(g)
                 .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
     }
 }

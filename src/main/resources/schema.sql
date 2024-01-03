@@ -24,7 +24,7 @@ create table if not exists `process`
     items          json        null comment '[{"number", "name", "point", "description"}]',
     point          tinyint     null,
     auth           char(5)     not null,
-    student_attach json        null comment '[{"name", "ext"}]',
+    student_attach json        null comment '[{"number", "name", "ext", "description"}]',
     insert_time    datetime    not null default current_timestamp,
     update_time    datetime    not null default current_timestamp on update current_timestamp
 
@@ -49,10 +49,11 @@ create table if not exists `process_file`
     detail      varchar(60) null,
     student_id  char(19)    not null,
     process_id  char(19)    not null,
+    number      tinyint     not null,
     insert_time datetime    not null default current_timestamp,
     update_time datetime    not null default current_timestamp on update current_timestamp,
 
-    unique (process_id, student_id)
+    unique (process_id, student_id, number)
 );
 
 /*create table if not exists `user_test`

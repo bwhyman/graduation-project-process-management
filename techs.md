@@ -69,6 +69,7 @@ concat()函数，拼接字符串。
 
 添加/更新数组中元素。不存在时，在数组中添加；存在，则更新。不建议处理过大的json数据。  
 使用isnull()函数替代on连接，可在null时将索引置于最后。
+
 ```sql
 update process_score pt
     join JSON_TABLE(
@@ -192,9 +193,11 @@ MySQL索引类型与传入参数类型不匹配可能使索引失效。
 json数组字段声明多值索引，适合多标签声明及检索。  
 支持复合索引。  
 限制较多，当前支持命中索引的函数：member of，等3个。
+
 ```sql
 INDEX (( cast(group_number AS unsigned array) )),
 ```
 
 ### Docker
+
 终于实现基于healthcheck检测容器中程序运行状况，从而按顺序启动容器。

@@ -33,6 +33,12 @@ public class StudentController {
     @Value("${my.upload}")
     private String uploadDirectory;
 
+    @GetMapping("processes")
+    public Mono<ResultVO> getProcesses() {
+        return studentService.listProcesses()
+                .map(processes -> ResultVO.success(Map.of("processes", processes)));
+    }
+
     @GetMapping("tutors")
     public Mono<ResultVO> getInfo(@RequestAttribute("uid") String uid) {
         Mono<User> studentM = userService.getUser(uid);
@@ -74,15 +80,17 @@ public class StudentController {
     }
 
 
-    @PostMapping(value = "upload")
-    public Mono<ResultVO> upload(@RequestPart String pname,
-                                 @RequestPart String sid,
-                                 @RequestPart String pid,
+    @PostMapping(value = "upload/{pid}/numbers/{number}")
+    public Mono<ResultVO> upload(@PathVariable String pid,
+                                 @PathVariable int number,
+                                 @RequestPart String pname,
+                                 @RequestAttribute(RequestAttributeConstant.UID) String sid,
                                  Mono<FilePart> file) {
         return file.flatMap(filePart -> {
                     ProcessFile pf = ProcessFile.builder()
                             .studentId(sid)
                             .processId(pid)
+                            .number(number)
                             .detail(Path.of(pname).resolve(filePart.filename()).toString())
                             .build();
                     Path p = Path.of(uploadDirectory).resolve(pname);
@@ -94,8 +102,15 @@ public class StudentController {
                             })
                             .then(Mono.defer(() -> studentService.addProcessFile(pf)));
                 })
-                .thenReturn(ResultVO.success(Map.of()))
+                .flatMap(pf -> studentService.listProcessFiles(pid, sid)
+                        .map(processFiles -> ResultVO.success(Map.of("processfiles", processFiles))))
                 .onErrorResume(ex -> Mono.just(ResultVO.error(400, "文件上传错误！" + ex.getMessage())));
     }
 
+    @GetMapping("processfiles/{pid}")
+    public Mono<ResultVO> getProcessFiles(@PathVariable String pid,
+            @RequestAttribute(RequestAttributeConstant.UID) String sid) {
+        return studentService.listProcessFiles(pid, sid)
+                .map(processFiles -> ResultVO.success(Map.of("processfiles", processFiles)));
+    }
 }

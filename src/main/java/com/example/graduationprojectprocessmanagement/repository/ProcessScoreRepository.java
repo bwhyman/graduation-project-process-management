@@ -34,14 +34,20 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
             """)
     Flux<ProcessScore> findByTeacher(String tid, String pid);
 
-    @Query("""
-            select ps.id from process_score ps where ps.process_id=:pid and ps.student_id=:sid;
-            """)
-    Mono<String> findByProcessIdAndStudentId(String pid, String sid);
-
     @Modifying
     @Query("""
             update process_score ps set ps.detail=:detail where ps.id=:psid
             """)
     Mono<Integer> updateDetail(String psid, String detail);
+
+    @Query("""
+            select ps.id as id,
+                ps.student_id as student_id,
+                ps.process_id as process_id,
+                ps.teacher_id as teacher_id,
+                ps.detail as detail
+            from process_score ps, user u
+            where ps.student_id=u.id and u.group_number=:groupNumber;
+            """)
+    Flux<ProcessScore> findByGroup(int groupNumber);
 }
