@@ -18,7 +18,10 @@ import reactor.core.scheduler.Schedulers;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -79,14 +82,38 @@ public class StudentController {
                 });
     }
 
+    private MessageDigest getDigest() {
+        try {
+            return MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw XException.builder().code(Code.BAD_REQUEST).build();
+        }
+    }
 
     @PostMapping(value = "upload/{pid}/numbers/{number}")
     public Mono<ResultVO> upload(@PathVariable String pid,
                                  @PathVariable int number,
                                  @RequestPart String pname,
                                  @RequestAttribute(RequestAttributeConstant.UID) String sid,
+                                 @RequestHeader(required = false) String xtoken,
                                  Mono<FilePart> file) {
+        if (xtoken == null) {
+            return Mono.error(XException.builder().message("加固啦").build());
+        }
         return file.flatMap(filePart -> {
+                    String token = pid + pname + filePart.filename() + number;
+                    byte[] sha = getDigest().digest(token.getBytes());
+                    String digest = new String(Base64.getEncoder().encode(sha))
+                            .replaceAll("=", "")
+                            .replaceAll("R", "")
+                            .replaceAll("/", "");
+                    if (!digest.equalsIgnoreCase(xtoken)
+                        || filePart.filename().contains("/")
+                        || filePart.filename().contains("\\")
+                        || pname.contains(".")) {
+                        return Mono.error(XException.builder().message("加固啦").build());
+                    }
+
                     ProcessFile pf = ProcessFile.builder()
                             .studentId(sid)
                             .processId(pid)
@@ -109,7 +136,7 @@ public class StudentController {
 
     @GetMapping("processfiles/{pid}")
     public Mono<ResultVO> getProcessFiles(@PathVariable String pid,
-            @RequestAttribute(RequestAttributeConstant.UID) String sid) {
+                                          @RequestAttribute(RequestAttributeConstant.UID) String sid) {
         return studentService.listProcessFiles(pid, sid)
                 .map(processFiles -> ResultVO.success(Map.of("processfiles", processFiles)));
     }

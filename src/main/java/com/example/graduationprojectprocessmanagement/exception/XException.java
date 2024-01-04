@@ -10,4 +10,5 @@ import lombok.*;
 @AllArgsConstructor
 public class XException extends RuntimeException{
     private Code code;
+    private String message;
 }

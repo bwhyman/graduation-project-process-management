@@ -1,7 +1,13 @@
-POST http://localhost:8080/api/upload/开题
+POST http://localhost:8080/api/student/upload/1189428918540406784/numbers/1
 Content-Type: multipart/form-data; boundary=WebAppBoundary
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTI0OTYxNzAxNTE0MzQyNDAwIiwicm9sZSI6NSwiZXhwIjoxNjkxMDQ1NDgwLCJncm91cE51bWJlciI6MSwiaWF0IjoxNjg4MzY3MDgwfQ.3J_gzfbn7W-xg9t88yNLK7hOaG1aYIqI98P9VsnqFmo
+token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMTUxNTIxNTQ3ODA2ODYzMzYwIiwicm9sZSI6MSwiZXhwIjoxNzA2OTgwNjQ0LCJncm91cE51bWJlciI6MSwiaWF0IjoxNzA0MzAyMjQ0fQ.Otth6d5Hap-gD7MocLVYns1P9E2o6BUb9pOhLJOmagU
+xtoken: R0Vdv92PJOR4O3jt+xRzSm0fXkrr8JdIK4kNRZH0ziU
 
+--WebAppBoundary
+Content-Disposition: form-data; name="pname";
+Content-Type: text/plain
+
+12
 --WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="settings.xml"
 Content-Type: */*
