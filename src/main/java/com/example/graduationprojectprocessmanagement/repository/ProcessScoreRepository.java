@@ -26,7 +26,8 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
             select ps.id as id,
                 ps.student_id as student_id,
                 ps.process_id as process_id,
-                ps.detail as detail
+                ps.detail as detail,
+                ps.teacher_id as teacher_id
             from user u, process_score ps
             where u.id=ps.student_id
             and ps.process_id = :pid

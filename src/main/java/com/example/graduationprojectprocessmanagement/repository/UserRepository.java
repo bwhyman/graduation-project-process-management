@@ -26,6 +26,10 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     Flux<User> findByRoleOrderById(int role);
 
+    @Query("""
+            select * from user u where u.role=:role and u.group_number=:groupNumber
+            order by u.student -> '$.queueNumber'
+            """)
     Flux<User> findByRoleAndGroupNumber(int role, int groupNumber);
 
     @Query("""
