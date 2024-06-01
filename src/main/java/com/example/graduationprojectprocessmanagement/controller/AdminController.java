@@ -78,11 +78,6 @@ public class AdminController {
                 .map(processes -> ResultVO.success(Map.of("processes", processes)));
     }
 
-    @PutMapping("passwords/{number}")
-    public Mono<ResultVO> putPassword(@PathVariable String number) {
-        return adminService.updatePassword(number).thenReturn(ResultVO.success(Map.of()));
-    }
-
     @PostMapping("resetdata")
     public Mono<ResultVO> postData() {
         return adminService.updateData().thenReturn(ResultVO.success(Map.of()));
@@ -94,7 +89,7 @@ public class AdminController {
         return adminService.updateGroup(user.getNumber(), user.getGroupNumber())
                 .thenReturn(ResultVO.success(Map.of()));
     }
-
+    // 毕业答辩前，录入学生组，毕设名称
     @PostMapping("students/all")
     public Mono<ResultVO> postStudentsALl(@RequestBody List<StudentDTO> studentDTOs) {
         return adminService.updateStudentsAll(studentDTOs).thenReturn(ResultVO.success(Map.of()));

@@ -10,6 +10,7 @@ import com.example.graduationprojectprocessmanagement.repository.ProcessScoreRep
 import com.example.graduationprojectprocessmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -24,6 +25,7 @@ public class TeacherService {
     private final ProcessRepository processRepository;
     private final ProcessFileRepository processFileRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Mono<Process> getProcess(String processId) {
         return processRepository.findById(processId);
@@ -62,5 +64,10 @@ public class TeacherService {
     }
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber) {
         return processScoreRepository.findByGroup(groupNumber).collectList();
+    }
+
+    @Transactional
+    public Mono<Integer> updatePassword(String number) {
+        return userRepository.updatePasswordByNumber(number, passwordEncoder.encode(number));
     }
 }

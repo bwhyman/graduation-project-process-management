@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -98,22 +100,15 @@ public class StudentController {
                                  @RequestHeader(required = false) String xtoken,
                                  Mono<FilePart> file) {
         if (xtoken == null) {
-            return Mono.error(XException.builder().message("加固啦").build());
+            return Mono.error(XException.builder().message("文件上传错误").build());
         }
         return file.flatMap(filePart -> {
                     String token = pid + pname + filePart.filename() + number;
-                    byte[] sha = getDigest().digest(token.getBytes());
-                    String digest = new String(Base64.getEncoder().encode(sha))
-                            .replaceAll("=", "")
-                            .replaceAll("R", "")
-                            .replaceAll("/", "");
-                    if (!digest.equalsIgnoreCase(xtoken)
-                        || filePart.filename().contains("/")
-                        || filePart.filename().contains("\\")
-                        || pname.contains(".")) {
-                        return Mono.error(XException.builder().message("加固啦").build());
+                    byte[] encode = Base64.getEncoder().encode(URLEncoder.encode(token, Charset.defaultCharset()).getBytes());
+                    var base64 = new String(encode).substring(0, 10);
+                    if (!base64.equals(xtoken)) {
+                        return Mono.error(XException.builder().message("文件上传错误").build());
                     }
-
                     ProcessFile pf = ProcessFile.builder()
                             .studentId(sid)
                             .processId(pid)

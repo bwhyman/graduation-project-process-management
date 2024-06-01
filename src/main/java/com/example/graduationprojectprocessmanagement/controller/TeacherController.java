@@ -149,4 +149,9 @@ public class TeacherController {
         return teacherService.listProcessScores(g)
                 .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
     }
+    // 重置密码
+    @PutMapping("passwords/{number}")
+    public Mono<ResultVO> putPassword(@PathVariable String number) {
+        return teacherService.updatePassword(number).thenReturn(ResultVO.success(Map.of()));
+    }
 }

@@ -17,8 +17,9 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
                 ps.process_id as process_id,
                 ps.teacher_id as teacher_id,
                 ps.detail as detail
-            from process_score ps, user u
-            where ps.student_id=u.id and u.group_number=:groupNumber and ps.process_id=:pid;
+            from process_score ps left join user u
+            on ps.student_id=u.id
+            where u.group_number=:groupNumber and ps.process_id=:pid;
             """)
     Flux<ProcessScore> findByGroup(int groupNumber, String pid);
 
