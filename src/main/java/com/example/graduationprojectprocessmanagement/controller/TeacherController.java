@@ -152,6 +152,7 @@ public class TeacherController {
     // 重置密码
     @PutMapping("passwords/{number}")
     public Mono<ResultVO> putPassword(@PathVariable String number) {
-        return teacherService.updatePassword(number).thenReturn(ResultVO.success(Map.of()));
+        return teacherService.updatePassword(number)
+                .map(num ->  ResultVO.success(Map.of("number", num)));
     }
 }
