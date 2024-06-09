@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -20,8 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -102,17 +106,17 @@ public class TeacherController {
         return teacherService.listProcessFiles(tid, pid)
                 .map(pf -> ResultVO.success(Map.of("processFiles", pf)));
     }
-
+    private final DataBufferFactory factory = new DefaultDataBufferFactory();
     @GetMapping("download/{pname}")
-    public Mono<Void> download(@PathVariable String pname, ServerHttpResponse response) {
+    public Flux<DataBuffer> download(@PathVariable String pname, ServerHttpResponse response) throws IOException {
         Path path = Path.of(uploadDirectory).resolve(pname);
-        Flux<DataBuffer> buffer = DataBufferUtils.read(path, new DefaultDataBufferFactory(), 1024 * 1000);
         String name = URLEncoder.encode(path.getFileName().toString(), StandardCharsets.UTF_8);
         HttpHeaders headers = response.getHeaders();
         headers.set("filename", name);
+        headers.setContentLength(Files.size(path));
+        headers.setContentDisposition(ContentDisposition.attachment().build());
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", name);
-        return response.writeWith(buffer);
+        return DataBufferUtils.read(path, factory, 1024 * 8);
     }
 
     @GetMapping("unselected")
@@ -132,11 +136,13 @@ public class TeacherController {
         return userService.listUsers(User.ROLE_TEACHER)
                 .map(users -> ResultVO.success(Map.of("teachers", users)));
     }
+
     @GetMapping("processscores")
     public Mono<ResultVO> getProcessScores() {
         return teacherService.listProcessScores()
                 .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
     }
+
     @GetMapping("processes")
     public Mono<ResultVO> getProcesses() {
         return userService.listProcesses()
@@ -149,10 +155,11 @@ public class TeacherController {
         return teacherService.listProcessScores(g)
                 .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
     }
+
     // 重置密码
     @PutMapping("passwords/{number}")
     public Mono<ResultVO> putPassword(@PathVariable String number) {
         return teacherService.updatePassword(number)
-                .map(num ->  ResultVO.success(Map.of("number", num)));
+                .map(num -> ResultVO.success(Map.of("number", num)));
     }
 }
