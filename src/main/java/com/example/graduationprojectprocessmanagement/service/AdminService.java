@@ -118,5 +118,29 @@ public class AdminService {
     public Mono<Integer> updateGroup(String number, int g) {
         return userRepository.updateGroup(number, g);
     }
+    @Transactional
+    public Mono<Integer> removeProcess(String pid) {
+        return processRepository.deleteById(pid).thenReturn(1);
+    }
 
+    @Transactional
+    public Mono<Integer> updateProcess(Process process) {
+        return processRepository.findById(process.getId())
+                .flatMap(p -> {
+                    p.setAuth(process.getAuth());
+                    p.setItems(process.getItems());
+                    p.setPoint(process.getPoint());
+                    p.setName(process.getName());
+                    p.setStudentAttach(process.getStudentAttach());
+                    return processRepository.save(p);
+                }).thenReturn(1);
+    }
+
+    public Mono<User> getStudent(String account) {
+        return userRepository.findByNumber(account);
+    }
+    @Transactional
+    public Mono<Integer> updateStudentTeacher(String sid, String student) {
+        return userRepository.updateStudent(sid, student);
+    }
 }

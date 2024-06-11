@@ -31,7 +31,7 @@ public class AdminController {
 
     @PostMapping("teachers")
     public Mono<ResultVO> postTeachers(@RequestBody List<User> users) {
-        return adminService.addUsers(users, User.ROLE_TEACHER).thenReturn(ResultVO.success(Map.of()));
+        return adminService.addUsers(users, User.ROLE_TEACHER).thenReturn(ResultVO.ok());
     }
 
     @GetMapping("teachers")
@@ -42,12 +42,12 @@ public class AdminController {
 
     @PostMapping("students")
     public Mono<ResultVO> postStudents(@RequestBody List<User> users) {
-        return adminService.addUsers(users, User.ROLE_STUDENT).thenReturn(ResultVO.success(Map.of()));
+        return adminService.addUsers(users, User.ROLE_STUDENT).thenReturn(ResultVO.ok());
     }
 
     @PostMapping("students/projects")
     public Mono<ResultVO> postProjects(@RequestBody List<StudentDTO> studentDTOs) {
-        return adminService.updateProjectTitles(studentDTOs).thenReturn(ResultVO.success(Map.of()));
+        return adminService.updateProjectTitles(studentDTOs).thenReturn(ResultVO.ok());
     }
 
     @GetMapping("grouping")
@@ -62,7 +62,7 @@ public class AdminController {
 
     @PostMapping("grouping")
     public Mono<ResultVO> postgroupNumbers(@RequestBody List<StudentDTO> studentDTOs) {
-        return adminService.updateStudentsGroup(studentDTOs).thenReturn(ResultVO.success(Map.of()));
+        return adminService.updateStudentsGroup(studentDTOs).thenReturn(ResultVO.ok());
     }
 
     @PostMapping("processes")
@@ -80,18 +80,44 @@ public class AdminController {
 
     @PostMapping("resetdata")
     public Mono<ResultVO> postData() {
-        return adminService.updateData().thenReturn(ResultVO.success(Map.of()));
+        return adminService.updateData().thenReturn(ResultVO.ok());
     }
 
     // 修改组
     @PatchMapping("groups")
     public Mono<ResultVO> patchGroup(@RequestBody User user) {
         return adminService.updateGroup(user.getNumber(), user.getGroupNumber())
-                .thenReturn(ResultVO.success(Map.of()));
+                .thenReturn(ResultVO.ok());
     }
     // 毕业答辩前，录入学生组，毕设名称
     @PostMapping("students/all")
     public Mono<ResultVO> postStudentsALl(@RequestBody List<StudentDTO> studentDTOs) {
-        return adminService.updateStudentsAll(studentDTOs).thenReturn(ResultVO.success(Map.of()));
+        return adminService.updateStudentsAll(studentDTOs).thenReturn(ResultVO.ok());
+    }
+    //
+    @DeleteMapping("processes/{pid}")
+    public Mono<ResultVO> delProcess(@PathVariable String pid) {
+        return adminService.removeProcess(pid)
+                .flatMap(r -> adminService.listProcesses()
+                        .map(processes -> ResultVO.success(Map.of("processes", processes))));
+    }
+
+    @PatchMapping("processes")
+    public Mono<ResultVO> patchProcess(@RequestBody Process process) {
+        return adminService.updateProcess(process)
+                .flatMap(r -> adminService.listProcesses()
+                        .map(processes -> ResultVO.success(Map.of("processes", processes))));
+    }
+
+    @GetMapping("users/{account}")
+    public Mono<ResultVO> getStudent(@PathVariable String account) {
+        return adminService.getStudent(account)
+                .map(student -> ResultVO.success(Map.of("student", student)));
+    }
+
+    @PatchMapping("students/{sid}/student")
+    public Mono<ResultVO> patchStudent(@PathVariable String sid, @RequestBody User user) {
+        return adminService.updateStudentTeacher(sid, user.getStudent())
+                .thenReturn(ResultVO.ok());
     }
 }

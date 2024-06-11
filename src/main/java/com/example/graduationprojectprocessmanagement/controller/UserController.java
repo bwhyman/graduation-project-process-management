@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -21,6 +19,6 @@ public class UserController {
     @PostMapping("passwords")
     public Mono<ResultVO> postPassword(@RequestBody User user, @RequestAttribute(RequestAttributeConstant.UID) String uid) {
         return userService.updatePassword(uid, user.getPassword())
-                .thenReturn(ResultVO.success(Map.of()));
+                .thenReturn(ResultVO.ok());
     }
 }

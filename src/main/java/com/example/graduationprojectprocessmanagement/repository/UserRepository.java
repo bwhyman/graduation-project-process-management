@@ -74,4 +74,10 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     @Query("select u.description from user u where u.number='admin'")
     Mono<String> findStartTime();
+
+    @Modifying
+    @Query("""
+            update user u set u.student=:student where u.id=:sid
+            """)
+    Mono<Integer> updateStudent(String sid, String student);
 }
