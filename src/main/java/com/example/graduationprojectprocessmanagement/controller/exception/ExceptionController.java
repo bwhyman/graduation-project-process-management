@@ -15,8 +15,8 @@ import reactor.core.publisher.Mono;
 public class ExceptionController {
     // filter内无效，单独处理。
     @ExceptionHandler(XException.class)
-    public Mono<ResultVO> handleXException(Exception exception) {
-        return Mono.just(ResultVO.error(Code.BAD_REQUEST.getCode(), exception.getMessage()));
+    public Mono<ResultVO> handleXException(XException exception) {
+        return Mono.just(ResultVO.error(exception.getCode()));
     }
 
     @ExceptionHandler(Exception.class)
