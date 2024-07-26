@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -29,12 +30,14 @@ public class LoginController {
         return userService.getUserByNumber(user.getNumber())
                 .filter(u -> encoder.matches(user.getPassword(), u.getPassword()))
                 .map(u -> {
-                    Map<String, Object> tokenM = u.getGroupNumber() != null ?
-                            Map.of(RequestAttributeConstant.UID, u.getId(),
-                                    RequestAttributeConstant.ROLE, u.getRole(),
-                                    RequestAttributeConstant.GROUP_NUMBER, u.getGroupNumber())
-                            : Map.of(RequestAttributeConstant.UID, u.getId(),
-                            RequestAttributeConstant.ROLE, u.getRole());
+                    Map<String, Object> tokenM = new HashMap<>();
+                    tokenM.put(RequestAttributeConstant.UID, u.getId());
+                    tokenM.put(RequestAttributeConstant.ROLE, u.getRole());
+                    tokenM.put(RequestAttributeConstant.DEPARTMENT_ID, u.getDepartmentId());
+                    if(u.getGroupNumber() != null) {
+                        tokenM.put(RequestAttributeConstant.GROUP_NUMBER, u.getGroupNumber());
+                    }
+                    
                     String token = jwtComponent.encode(tokenM);
                     response.getHeaders().add(RequestAttributeConstant.TOKEN, token);
 

@@ -35,6 +35,7 @@ public class InitService {
                                 .number(number)
                                 .password(encoder.encode(number))
                                 .role(User.ROLE_ADMIN)
+                                .departmentId(number)
                                 .description(startTime.toString())
                                 .build();
                         return userRepository.save(admin).then();

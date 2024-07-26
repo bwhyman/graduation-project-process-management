@@ -9,6 +9,7 @@ public enum Code {
     NOT_START(201, "未开始"),
     QUANTITY_FULL(210, "导师数量已满，请重新选择"),
     REPEAT_SELECTION(211, "导师不可重复选择");
+    public static int ERROR = 400;
 
     private final int code;
     private final String message;

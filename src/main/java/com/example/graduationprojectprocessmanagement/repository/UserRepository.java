@@ -13,6 +13,8 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     Mono<User> findByNumber(String number);
 
+    Mono<User> findByNumberAndDepartmentId(String number, String depid);
+
     @Modifying
     @Query("update user u set u.description=:time where u.number='admin'")
     Mono<Integer> updateStartTime(String time);
@@ -24,18 +26,19 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
             """)
     Mono<Integer> updateCount(String tid);
 
-    Flux<User> findByRoleOrderById(int role);
+    Flux<User> findByRoleAndDepartmentIdOrderById(int role, String depid);
 
     @Query("""
-            select * from user u where u.role=:role and u.group_number=:groupNumber
+            select * from user u
+            where u.role=:role and u.group_number=:groupNumber and u.department_id=:depid
             order by u.student -> '$.queueNumber'
             """)
-    Flux<User> findByRoleAndGroupNumber(int role, int groupNumber);
+    Flux<User> findByRoleAndGroupNumber(String depid, int role, int groupNumber);
 
     @Query("""
-            select * from user u where u.student->>'$.teacherId'=:tid
+            select * from user u where u.student->>'$.teacherId'=:tid and u.department_id=:depid
             """)
-    Flux<User> findStudentByTeacherId(String tid);
+    Flux<User> findStudentByTeacherId(String tid, String depid);
 
     @Modifying
     @Query("""
@@ -80,4 +83,6 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
             update user u set u.student=:student where u.id=:sid
             """)
     Mono<Integer> updateStudent(String sid, String student);
+
+    Mono<Integer> countByDepartmentId(String did);
 }

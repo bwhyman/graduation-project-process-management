@@ -5,4 +5,5 @@ public interface RequestAttributeConstant {
     String UID = "uid";
     String ROLE = "role";
     String GROUP_NUMBER = "groupNumber";
+    String DEPARTMENT_ID = "depid";
 }

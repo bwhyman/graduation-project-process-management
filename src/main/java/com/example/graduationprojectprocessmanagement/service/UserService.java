@@ -6,13 +6,11 @@ import com.example.graduationprojectprocessmanagement.repository.ProcessReposito
 import com.example.graduationprojectprocessmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,30 +28,24 @@ public class UserService {
     public Mono<User> getUser(String uid) {
         return userRepository.findById(uid);
     }
-    public Mono<List<User>> listStudents(String tid) {
-        return userRepository.findStudentByTeacherId(tid).collectList();
+    public Mono<List<User>> listStudents(String tid, String depid) {
+        return userRepository.findStudentByTeacherId(tid, depid).collectList();
     }
 
-    public Mono<List<User>> listUsers(int role) {
-        return userRepository.findByRoleOrderById(role).collectList();
+    public Mono<List<User>> listUsers(int role, String depid) {
+        return userRepository.findByRoleAndDepartmentIdOrderById(role, depid).collectList();
     }
 
     //@Cacheable(value = "groupusers", key = "{#role-#groupNumber}")
-    public Mono<List<User>> listUsers(int role, int groupNumber) {
-        return userRepository.findByRoleAndGroupNumber(role, groupNumber).collectList().cache();
+    public Mono<List<User>> listUsers(int role, int groupNumber, String depid) {
+        return userRepository.findByRoleAndGroupNumber(depid, role, groupNumber).collectList().cache();
     }
     @Transactional
     public Mono<Integer> updatePassword(String uid, String password) {
         return userRepository.updatePasswordById(uid, passwordEncoder.encode(password));
     }
     //@Cacheable("processes")
-    public Mono<List<Process>> listProcesses() {
-        return processRepository.findAll().collectList().cache();
-    }
-
-    @Cacheable("starttime")
-    public Mono<LocalDateTime> getStartTime() {
-        return userRepository.findStartTime()
-                .map(LocalDateTime::parse).cache();
+    public Mono<List<Process>> listProcesses(String depid) {
+        return processRepository.findByDepartmentId(depid).collectList().cache();
     }
 }

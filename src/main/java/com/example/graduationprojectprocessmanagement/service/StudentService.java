@@ -2,9 +2,6 @@ package com.example.graduationprojectprocessmanagement.service;
 
 import com.example.graduationprojectprocessmanagement.dox.Process;
 import com.example.graduationprojectprocessmanagement.dox.ProcessFile;
-import com.example.graduationprojectprocessmanagement.dox.User;
-import com.example.graduationprojectprocessmanagement.exception.Code;
-import com.example.graduationprojectprocessmanagement.exception.XException;
 import com.example.graduationprojectprocessmanagement.repository.ProcessFileRepository;
 import com.example.graduationprojectprocessmanagement.repository.ProcessRepository;
 import com.example.graduationprojectprocessmanagement.repository.UserRepository;
@@ -28,7 +25,7 @@ public class StudentService {
         return processRepository.findById(pid);
     }
 
-    @Transactional
+    /*@Transactional
     public Mono<User> addSelection(String sid, String tid) {
         Mono<Integer> resultM = userRepository.updateCount(tid);
         Mono<User> studentM = userRepository.findById(sid);
@@ -44,7 +41,7 @@ public class StudentService {
                             student.setStudent(teacherJSON.formatted(teacher.getId(), teacher.getName()));
                             return userRepository.save(student);
                         })));
-    }
+    }*/
 
     @Transactional
     public Mono<ProcessFile> addProcessFile(ProcessFile processFile) {
@@ -54,10 +51,6 @@ public class StudentService {
                     return processFileRepository.save(p);
                 })
                 .switchIfEmpty(Mono.defer(() -> processFileRepository.save(processFile)));
-    }
-
-    public Mono<List<Process>> listProcesses() {
-        return processRepository.findStudentsProcesses().collectList();
     }
 
     public Mono<List<ProcessFile>> listProcessFiles(String pid, String sid) {

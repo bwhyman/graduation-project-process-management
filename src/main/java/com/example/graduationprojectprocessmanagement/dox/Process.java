@@ -27,6 +27,7 @@ public class Process {
     private String items;
     private int point;
     private String auth;
+    private String departmentId;
     // json
     private String studentAttach;
     @ReadOnlyProperty

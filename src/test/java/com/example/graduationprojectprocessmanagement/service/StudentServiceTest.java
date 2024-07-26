@@ -1,8 +1,6 @@
 package com.example.graduationprojectprocessmanagement.service;
 
-import com.example.graduationprojectprocessmanagement.dox.User;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,7 +12,7 @@ public class StudentServiceTest {
     @Autowired
     private UserService userService;
 
-    @Test
+    /*@Test
     public void addSelectionTest() {
         User t1 = userService.getUserByNumber("2001").block();
         User t2 = userService.getUserByNumber("2002").block();
@@ -34,6 +32,6 @@ public class StudentServiceTest {
         studentService.addSelection(s2.getId(), t1.getId()).block();
         studentService.addSelection(s3.getId(), t2.getId()).block();
         studentService.addSelection(s4.getId(), t2.getId()).block();
-    }
+    }*/
 
 }

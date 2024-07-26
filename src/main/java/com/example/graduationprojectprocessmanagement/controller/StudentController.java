@@ -1,11 +1,9 @@
 package com.example.graduationprojectprocessmanagement.controller;
 
 import com.example.graduationprojectprocessmanagement.dox.ProcessFile;
-import com.example.graduationprojectprocessmanagement.dox.User;
 import com.example.graduationprojectprocessmanagement.exception.Code;
 import com.example.graduationprojectprocessmanagement.exception.XException;
 import com.example.graduationprojectprocessmanagement.service.StudentService;
-import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
 import com.example.graduationprojectprocessmanagement.vo.ResultVO;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -32,20 +28,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/student/")
 public class StudentController {
-    private final UserService userService;
     private final StudentService studentService;
 
     @Value("${my.upload}")
     private String uploadDirectory;
 
-    @GetMapping("processes")
-    public Mono<ResultVO> getProcesses() {
-        return studentService.listProcesses()
-                .map(processes -> ResultVO.success(Map.of("processes", processes)));
-    }
-
-    @GetMapping("tutors")
-    public Mono<ResultVO> getInfo(@RequestAttribute("uid") String uid) {
+    /*@GetMapping("tutors")
+    public Mono<ResultVO> getInfo(@RequestAttribute(RequestAttributeConstant.UID) String uid) {
         Mono<User> studentM = userService.getUser(uid);
         Mono<List<User>> teachersM = userService.listUsers(User.ROLE_TEACHER);
 
@@ -62,10 +51,10 @@ public class StudentController {
                                     : Mono.just(ResultVO.success(Map.of("starttime", startTime)))
                     );
                 });
-    }
+    }*/
 
     // 选导师
-    @PutMapping("tutors/{tid}")
+    /*@PutMapping("tutors/{tid}")
     public Mono<ResultVO> putSelection(@PathVariable String tid, @RequestAttribute(RequestAttributeConstant.UID) String uid) {
         return userService.getStartTime()
                 .flatMap(startTime -> {
@@ -82,7 +71,7 @@ public class StudentController {
                                 return Mono.just(ResultVO.error(x.getCode()));
                             });
                 });
-    }
+    }*/
 
     private MessageDigest getDigest() {
         try {

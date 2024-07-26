@@ -16,7 +16,10 @@ public class ExceptionController {
     // filter内无效，单独处理。
     @ExceptionHandler(XException.class)
     public Mono<ResultVO> handleXException(XException exception) {
-        return Mono.just(ResultVO.error(exception.getCode()));
+        if (exception.getCode() != null) {
+            return Mono.just(ResultVO.error(exception.getCode()));
+        }
+        return Mono.just(ResultVO.error(exception.getCodeN(), exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

@@ -52,7 +52,7 @@ public class LoginFilter implements WebFilter {
                 .flatMap(decode -> {
                     exchange.getAttributes().put(RequestAttributeConstant.UID, decode.getClaim(RequestAttributeConstant.UID).asString());
                     exchange.getAttributes().put(RequestAttributeConstant.ROLE, decode.getClaim(RequestAttributeConstant.ROLE).asInt());
-
+                    exchange.getAttributes().put(RequestAttributeConstant.DEPARTMENT_ID, decode.getClaim(RequestAttributeConstant.DEPARTMENT_ID).asString());
                     if (!decode.getClaim(RequestAttributeConstant.GROUP_NUMBER).isMissing()) {
                         exchange.getAttributes().put(RequestAttributeConstant.GROUP_NUMBER, decode.getClaim(RequestAttributeConstant.GROUP_NUMBER).asInt());
                     }
