@@ -29,8 +29,8 @@ public class AdminFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         if (includes.matches(request.getPath().pathWithinApplication())) {
-            int role = (int) exchange.getAttributes().get(RequestAttributeConstant.ROLE);
-            if (User.ROLE_ADMIN == role) {
+            String role = (String) exchange.getAttributes().get(RequestAttributeConstant.ROLE);
+            if (User.ROLE_ADMIN.equals(role)) {
                 return chain.filter(exchange);
             }
             return responseHelper.response(Code.FORBIDDEN, exchange);

@@ -7,12 +7,10 @@ import com.example.graduationprojectprocessmanagement.repository.DepartmentRepos
 import com.example.graduationprojectprocessmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,26 +19,6 @@ import java.util.List;
 public class AdminService {
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
-
-    @Transactional
-    @CachePut("starttime")
-    public Mono<LocalDateTime> updateStartTime(String time) {
-        return userRepository.updateStartTime(time)
-                .thenReturn(LocalDateTime.parse(time)).cache();
-    }
-
-    @Transactional
-    public Mono<Void> updateData() {
-        Mono<Integer> sM = userRepository.updateStudentData();
-        Mono<Integer> tM = userRepository.updateTeacherData();
-        return Mono.when(sM, tM).then();
-    }
-
-    @Transactional
-    //@CacheEvict(value = "groupusers", allEntries = true)
-    public Mono<Integer> updateGroup(String number, int g) {
-        return userRepository.updateGroup(number, g);
-    }
 
     @Transactional
     public Mono<Integer> updateStudentTeacher(String sid, String student) {

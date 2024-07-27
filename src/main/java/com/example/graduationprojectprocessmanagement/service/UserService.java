@@ -32,12 +32,12 @@ public class UserService {
         return userRepository.findStudentByTeacherId(tid, depid).collectList();
     }
 
-    public Mono<List<User>> listUsers(int role, String depid) {
+    public Mono<List<User>> listUsers(String role, String depid) {
         return userRepository.findByRoleAndDepartmentIdOrderById(role, depid).collectList();
     }
 
     //@Cacheable(value = "groupusers", key = "{#role-#groupNumber}")
-    public Mono<List<User>> listUsers(int role, int groupNumber, String depid) {
+    public Mono<List<User>> listUsers(String role, int groupNumber, String depid) {
         return userRepository.findByRoleAndGroupNumber(depid, role, groupNumber).collectList().cache();
     }
     @Transactional

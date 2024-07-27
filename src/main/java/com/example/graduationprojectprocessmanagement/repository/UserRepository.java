@@ -16,24 +16,20 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
     Mono<User> findByNumberAndDepartmentId(String number, String depid);
 
     @Modifying
-    @Query("update user u set u.description=:time where u.number='admin'")
-    Mono<Integer> updateStartTime(String time);
-
-    @Modifying
     @Query("""
             update user u set u.teacher=json_set(u.teacher, '$.count', cast(u.teacher -> '$.count' + 1 as unsigned))
             where u.id=:tid and (u.teacher -> '$.total' - u.teacher -> '$.count' > 0);
             """)
     Mono<Integer> updateCount(String tid);
 
-    Flux<User> findByRoleAndDepartmentIdOrderById(int role, String depid);
+    Flux<User> findByRoleAndDepartmentIdOrderById(String role, String depid);
 
     @Query("""
             select * from user u
             where u.role=:role and u.group_number=:groupNumber and u.department_id=:depid
-            order by u.student -> '$.queueNumber'
+            order by cast(u.student ->> '$.queueNumber' as unsigned)
             """)
-    Flux<User> findByRoleAndGroupNumber(String depid, int role, int groupNumber);
+    Flux<User> findByRoleAndGroupNumber(String depid, String role, int groupNumber);
 
     @Query("""
             select * from user u where u.student->>'$.teacherId'=:tid and u.department_id=:depid
@@ -71,12 +67,9 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     @Modifying
     @Query("""
-            update user u set u.group_number=:g where u.number=:number;
+            update user u set u.group_number=:g where u.number=:number and u.department_id=:depid;
             """)
-    Mono<Integer> updateGroup(String number, int g);
-
-    @Query("select u.description from user u where u.number='admin'")
-    Mono<String> findStartTime();
+    Mono<Integer> updateGroup(String number, int g, String depid);
 
     @Modifying
     @Query("""

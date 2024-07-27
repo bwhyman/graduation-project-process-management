@@ -1,6 +1,5 @@
 package com.example.graduationprojectprocessmanagement.dox;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +16,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class User {
-    public static final int ROLE_STUDENT = 1;
-    public static final int ROLE_TEACHER = 5;
-    public static final int ROLE_ADMIN = 10;
+    public static final String ROLE_STUDENT = "qpCf";
+    public static final String ROLE_TEACHER = "kU4T";
+    public static final String ROLE_ADMIN = "R2md";
     @Id
     @CreatedBy
     private String id;
@@ -31,8 +30,7 @@ public class User {
     private String teacher;
     private String description;
     private String departmentId;
-    @JsonIgnore
-    private Integer role;
+    private String role;
     private Integer groupNumber;
     @ReadOnlyProperty
     private LocalDateTime insertTime;

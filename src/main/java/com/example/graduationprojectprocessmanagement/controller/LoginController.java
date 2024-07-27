@@ -40,14 +40,7 @@ public class LoginController {
                     
                     String token = jwtComponent.encode(tokenM);
                     response.getHeaders().add(RequestAttributeConstant.TOKEN, token);
-
-                    String role = switch (u.getRole()) {
-                        case User.ROLE_STUDENT -> "zE1Ny";
-                        case User.ROLE_TEACHER -> "MjA5N";
-                        case User.ROLE_ADMIN -> "iaWF0";
-                        default -> "";
-                    };
-                    response.getHeaders().add(RequestAttributeConstant.ROLE, role);
+                    response.getHeaders().add(RequestAttributeConstant.ROLE, u.getRole());
                     return ResultVO.success(Map.of("user", u));
                 })
                 .defaultIfEmpty(ResultVO.error(Code.LOGIN_ERROR));

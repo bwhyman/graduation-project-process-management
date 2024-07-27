@@ -94,7 +94,7 @@ public class TeacherService {
     }
 
     @Transactional
-    public Mono<Integer> addUsers(List<User> users, int role, String depid) {
+    public Mono<Integer> addUsers(List<User> users, String role, String depid) {
         for (User user : users) {
             user.setDepartmentId(depid);
             user.setPassword(passwordEncoder.encode(user.getNumber()));
@@ -123,5 +123,24 @@ public class TeacherService {
 
     public Mono<User> getUser(String account, String depid) {
         return userRepository.findByNumberAndDepartmentId(account, depid);
+    }
+
+    @Transactional
+    //@CacheEvict(value = "groupusers", allEntries = true)
+    public Mono<Integer> updateGroup(String number, int g, String depid) {
+        return userRepository.updateGroup(number, g, depid);
+    }
+    @Transactional
+    public Mono<Integer> updateStudent(User user, String depid) {
+        return userRepository.findByNumberAndDepartmentId(user.getNumber(), depid)
+                .flatMap(u -> {
+                    if(user.getGroupNumber() != null) {
+                        u.setGroupNumber(user.getGroupNumber());
+                    }
+                    if (user.getStudent() != null) {
+                        u.setStudent(user.getStudent());
+                    }
+                    return userRepository.save(u);
+                }).thenReturn(1);
     }
 }

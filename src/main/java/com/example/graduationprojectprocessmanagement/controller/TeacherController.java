@@ -209,6 +209,21 @@ public class TeacherController {
     public Mono<ResultVO> getStudent(@PathVariable String account,
                                      @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.getUser(account, depid)
-                .map(student -> ResultVO.success(Map.of("student", student)));
+                .map(student -> ResultVO.success(Map.of("user", student)));
+    }
+
+    @PutMapping("users/{account}/groups/{g}")
+    public Mono<ResultVO> patchUserGroup(@PathVariable String account,
+                                         @PathVariable int g,
+                                         @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
+        return teacherService.updateGroup(account, g, depid)
+                .thenReturn(ResultVO.ok());
+    }
+    //
+    @PatchMapping("student")
+    public Mono<ResultVO> patchStudent(@RequestBody User user,
+                                       @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
+        return teacherService.updateStudent(user, depid)
+                .thenReturn(ResultVO.ok());
     }
 }

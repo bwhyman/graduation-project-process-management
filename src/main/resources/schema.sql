@@ -14,7 +14,7 @@ create table if not exists `user`
     password      varchar(65)  not null,
     description   varchar(200) null,
     department_id char(19)     not null,
-    role          tinyint      not null,
+    role          char(4)      not null,
     group_number  tinyint      null,
     student       json         null comment '{"teacherId", "teacherName", "queueNumber", "projectTitle"}',
     teacher       json         null comment '{"A", "C", "total"}',
