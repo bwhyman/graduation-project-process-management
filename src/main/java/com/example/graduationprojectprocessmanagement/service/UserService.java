@@ -28,6 +28,7 @@ public class UserService {
     public Mono<User> getUser(String uid) {
         return userRepository.findById(uid);
     }
+
     public Mono<List<User>> listStudents(String tid, String depid) {
         return userRepository.findStudentByTeacherId(tid, depid).collectList();
     }
@@ -36,16 +37,15 @@ public class UserService {
         return userRepository.findByRoleAndDepartmentIdOrderById(role, depid).collectList();
     }
 
-    //@Cacheable(value = "groupusers", key = "{#role-#groupNumber}")
     public Mono<List<User>> listUsers(String role, int groupNumber, String depid) {
-        return userRepository.findByRoleAndGroupNumber(depid, role, groupNumber).collectList().cache();
+        return userRepository.findByRoleAndGroupNumber(depid, role, groupNumber).collectList();
     }
     @Transactional
     public Mono<Integer> updatePassword(String uid, String password) {
         return userRepository.updatePasswordById(uid, passwordEncoder.encode(password));
     }
-    //@Cacheable("processes")
+
     public Mono<List<Process>> listProcesses(String depid) {
-        return processRepository.findByDepartmentId(depid).collectList().cache();
+        return processRepository.findByDepartmentId(depid).collectList();
     }
 }

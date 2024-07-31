@@ -15,13 +15,6 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
 
     Mono<User> findByNumberAndDepartmentId(String number, String depid);
 
-    @Modifying
-    @Query("""
-            update user u set u.teacher=json_set(u.teacher, '$.count', cast(u.teacher -> '$.count' + 1 as unsigned))
-            where u.id=:tid and (u.teacher -> '$.total' - u.teacher -> '$.count' > 0);
-            """)
-    Mono<Integer> updateCount(String tid);
-
     Flux<User> findByRoleAndDepartmentIdOrderById(String role, String depid);
 
     @Query("""

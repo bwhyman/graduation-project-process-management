@@ -30,7 +30,6 @@ public class TeacherService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    //@CacheEvict(value = "processes", allEntries = true)
     public Mono<Process> addProcess(Process process) {
         return processRepository.save(process);
     }
@@ -51,10 +50,6 @@ public class TeacherService {
                     p.setStudentAttach(process.getStudentAttach());
                     return processRepository.save(p);
                 }).thenReturn(1);
-    }
-
-    public Mono<Process> getProcess(String processId) {
-        return processRepository.findById(processId);
     }
 
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber, String processId) {
@@ -126,7 +121,6 @@ public class TeacherService {
     }
 
     @Transactional
-    //@CacheEvict(value = "groupusers", allEntries = true)
     public Mono<Integer> updateGroup(String number, int g, String depid) {
         return userRepository.updateGroup(number, g, depid);
     }

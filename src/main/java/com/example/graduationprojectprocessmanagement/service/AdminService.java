@@ -21,11 +21,6 @@ public class AdminService {
     private final DepartmentRepository departmentRepository;
 
     @Transactional
-    public Mono<Integer> updateStudentTeacher(String sid, String student) {
-        return userRepository.updateStudent(sid, student);
-    }
-
-    @Transactional
     public Mono<Department> addDepartment(Department department) {
         return departmentRepository.save(department);
     }
