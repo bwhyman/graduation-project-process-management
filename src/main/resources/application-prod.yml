@@ -10,7 +10,7 @@ spring:
       enabled: true
       max-size: 200
       initial-size: 1
-      validation-query: select 1
+
   servlet:
     multipart:
       max-file-size: -1

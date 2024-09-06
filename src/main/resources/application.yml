@@ -9,7 +9,7 @@ spring:
     pool:
       enabled: true
       initial-size: 1
-      validation-query: select 1
+
   servlet:
     multipart:
       max-file-size: -1
