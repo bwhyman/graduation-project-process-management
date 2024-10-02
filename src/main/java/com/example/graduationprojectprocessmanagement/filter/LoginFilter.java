@@ -35,13 +35,13 @@ public class LoginFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        if (!includes.matches(request.getPath().pathWithinApplication())) {
+            return chain.filter(exchange);
+        }
         for (PathPattern p : excludesS) {
             if (p.matches(request.getPath().pathWithinApplication())) {
                 return chain.filter(exchange);
             }
-        }
-        if (!includes.matches(request.getPath().pathWithinApplication())) {
-            return responseHelper.response(Code.BAD_REQUEST, exchange);
         }
         String token = request.getHeaders().getFirst(RequestAttributeConstant.TOKEN);
         if (token == null) {

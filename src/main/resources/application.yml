@@ -32,3 +32,9 @@ logging:
 my:
   secretkey: '636eac2534bcfcc0'
   upload: 'E:/'
+# http://localhost:8080/webjars/swagger-ui/index.html
+# 否则webflux有前缀
+# 拦截器需过滤：/v3/api-docs/**; /swagger-ui/**
+springdoc:
+  webjars:
+    prefix: ''

@@ -29,3 +29,6 @@ logging:
 my:
   secretkey: ${secretkey}
   upload: '/home/upload/'
+springdoc:
+  webjars:
+    prefix: ''
