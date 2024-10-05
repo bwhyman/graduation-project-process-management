@@ -34,7 +34,7 @@ public class AdminController {
     @GetMapping("departments")
     public Mono<ResultVO> getDepartments() {
         return adminService.listDepartments()
-                .map(departments -> ResultVO.success(Map.of("departments", departments)));
+                .map(ResultVO::success);
     }
 
     // 添加，并返回全部专业
@@ -42,12 +42,12 @@ public class AdminController {
     public Mono<ResultVO> postDepartment(@RequestBody Department department) {
         return adminService.addDepartment(department)
                 .flatMap(r -> adminService.listDepartments())
-                .map(departments -> ResultVO.success(Map.of("departments", departments)));
+                .map(ResultVO::success);
     }
     @DeleteMapping("departments/{did}")
     public Mono<ResultVO>delDepartment(@PathVariable String did) {
         return adminService.removeDepartment(did)
                 .flatMap(r -> adminService.listDepartments())
-                .map(departments -> ResultVO.success(Map.of("departments", departments)));
+                .map(ResultVO::success);
     }
 }

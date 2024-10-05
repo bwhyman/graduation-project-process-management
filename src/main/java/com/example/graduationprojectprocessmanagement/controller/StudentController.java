@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -114,14 +113,14 @@ public class StudentController {
                             .then(Mono.defer(() -> studentService.addProcessFile(pf)));
                 })
                 .flatMap(pf -> studentService.listProcessFiles(pid, sid)
-                        .map(processFiles -> ResultVO.success(Map.of("processfiles", processFiles))))
-                .onErrorResume(ex -> Mono.just(ResultVO.error(400, "文件上传错误！" + ex.getMessage())));
+                        .map(ResultVO::success))
+                .onErrorResume(ex -> Mono.just(ResultVO.error(Code.ERROR, "文件上传错误！" + ex.getMessage())));
     }
 
     @GetMapping("processfiles/{pid}")
     public Mono<ResultVO> getProcessFiles(@PathVariable String pid,
                                           @RequestAttribute(RequestAttributeConstant.UID) String sid) {
         return studentService.listProcessFiles(pid, sid)
-                .map(processFiles -> ResultVO.success(Map.of("processfiles", processFiles)));
+                .map(ResultVO::success);
     }
 }

@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -41,13 +44,8 @@ public class LoginController {
                     String token = jwtComponent.encode(tokenM);
                     response.getHeaders().add(RequestAttributeConstant.TOKEN, token);
                     response.getHeaders().add(RequestAttributeConstant.ROLE, u.getRole());
-                    return ResultVO.success(Map.of("user", u));
+                    return ResultVO.success(u);
                 })
                 .defaultIfEmpty(ResultVO.error(Code.LOGIN_ERROR));
-    }
-
-    @GetMapping("info")
-    public Mono<ResultVO> getInfo(@RequestAttribute(RequestAttributeConstant.UID) String uid) {
-        return userService.getUser(uid).map(user -> ResultVO.success(Map.of("user", user)));
     }
 }

@@ -14,7 +14,7 @@ public class UserServiceTest {
     private UserService userService;
     @Test
     public void listStudentsTest() {
-        userService.listUsers(User.ROLE_STUDENT, 1).doOnSuccess(students -> {
+        userService.listUsers(User.ROLE_STUDENT, "1").doOnSuccess(students -> {
             for (User s : students) {
                 log.debug(s.toString());
             }
@@ -23,21 +23,11 @@ public class UserServiceTest {
 
     @Test
     public void listTeachersTest() {
-        userService.listUsers(User.ROLE_TEACHER, 1).doOnSuccess(teachers -> {
+        userService.listUsers(User.ROLE_TEACHER, "1").doOnSuccess(teachers -> {
             for (User t : teachers) {
                 log.debug(t.toString());
             }
         }).block();
     }
-    @Test
-    public void listStudentsByTidTest() {
-        User t1 = userService.getUser("2001").block();
-        assert t1 != null;
 
-        userService.listStudents(t1.getId()).doOnSuccess(users -> {
-            for (User user : users) {
-                log.debug(user.toString());
-            }
-        }).block();
-    }
 }

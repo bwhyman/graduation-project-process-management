@@ -7,6 +7,7 @@ import com.example.graduationprojectprocessmanagement.service.TeacherService;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
 import com.example.graduationprojectprocessmanagement.vo.ResultVO;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -47,7 +47,7 @@ public class TeacherController {
         process.setDepartmentId(depid);
         return teacherService.addProcess(process)
                 .flatMap(r -> userService.listProcesses(depid))
-                .map(processes -> ResultVO.success(Map.of("processes", processes)));
+                .map(ResultVO::success);
     }
 
     @DeleteMapping("processes/{pid}")
@@ -55,7 +55,7 @@ public class TeacherController {
                                      @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.removeProcess(pid, depid)
                 .flatMap(r -> userService.listProcesses(depid)
-                        .map(processes -> ResultVO.success(Map.of("processes", processes))));
+                        .map(ResultVO::success));
     }
 
     @PatchMapping("processes")
@@ -63,14 +63,14 @@ public class TeacherController {
                                        @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.updateProcess(process, depid)
                 .flatMap(r -> userService.listProcesses(depid)
-                        .map(processes -> ResultVO.success(Map.of("processes", processes))));
+                        .map(ResultVO::success));
     }
 
     @GetMapping("{tid}/students")
     public Mono<ResultVO> getTeacherStudents(@PathVariable String tid,
                                              @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listStudents(tid, depid)
-                .map(students -> ResultVO.success(Map.of("students", students)));
+                .map(ResultVO::success);
     }
 
     @GetMapping("students/group")
@@ -78,7 +78,7 @@ public class TeacherController {
             @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g,
             @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listUsers(User.ROLE_STUDENT, g, depid)
-                .map(users -> ResultVO.success(Map.of("students", users)));
+                .map(ResultVO::success);
     }
 
     @GetMapping("students/tutor")
@@ -86,7 +86,7 @@ public class TeacherController {
             @RequestAttribute(RequestAttributeConstant.UID) String tid,
             @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listStudents(tid, depid)
-                .map(users -> ResultVO.success(Map.of("students", users)));
+                .map(ResultVO::success);
     }
 
     @GetMapping("teachers/group")
@@ -94,9 +94,10 @@ public class TeacherController {
             @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g,
             @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listUsers(User.ROLE_TEACHER, g, depid)
-                .map(users -> ResultVO.success(Map.of("teachers", users)));
+                .map(ResultVO::success);
     }
 
+    @Operation(summary = "传递auth参数可避免检索process类型")
     // 加载组指定过程评分
     @GetMapping("processes/{pid}/types/{auth}")
     public Mono<ResultVO> getProcesScore(@PathVariable String pid, @PathVariable String auth,
@@ -104,12 +105,13 @@ public class TeacherController {
                                          @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
         if (auth.equals(Process.REVIEW)) {
             return teacherService.listProcessScores(g, pid)
-                    .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+                    .map(ResultVO::success);
         }
         return teacherService.listProcessScores(tid, pid)
-                .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+                .map(ResultVO::success);
     }
 
+    @Operation(summary = "评分后，需要基于auth参数决定返回小组/指导学生成绩")
     // 更新与添加
     @PostMapping("processscores/types/{auth}")
     public Mono<ResultVO> postProcess(
@@ -121,10 +123,10 @@ public class TeacherController {
                 .then(Mono.defer(() -> {
                     if (auth.equals(Process.REVIEW)) {
                         return teacherService.listProcessScores(g, ps.getProcessId())
-                                .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+                                .map(ResultVO::success);
                     }
                     return teacherService.listProcessScores(tid, ps.getProcessId())
-                            .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+                            .map(ResultVO::success);
                 }));
     }
 
@@ -135,10 +137,10 @@ public class TeacherController {
                                           @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
         if (auth.equals(Process.REVIEW)) {
             return teacherService.listProcessFiles(g, pid)
-                    .map(pf -> ResultVO.success(Map.of("processFiles", pf)));
+                    .map(ResultVO::success);
         }
         return teacherService.listProcessFiles(tid, pid)
-                .map(pf -> ResultVO.success(Map.of("processFiles", pf)));
+                .map(ResultVO::success);
     }
 
     private final DataBufferFactory factory = new DefaultDataBufferFactory();
@@ -158,34 +160,34 @@ public class TeacherController {
     @GetMapping("students")
     public Mono<ResultVO> getStudents(@RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listUsers(User.ROLE_STUDENT, depid)
-                .map(users -> ResultVO.success(Map.of("students", users)));
+                .map(ResultVO::success);
     }
 
     @GetMapping("teachers")
     public Mono<ResultVO> getTeachers(@RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listUsers(User.ROLE_TEACHER, depid)
-                .map(users -> ResultVO.success(Map.of("teachers", users)));
+                .map(ResultVO::success);
     }
 
     // 加载全部学生评分
     @GetMapping("processscores")
     public Mono<ResultVO> getProcessScores() {
         return teacherService.listProcessScores()
-                .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+                .map(ResultVO::success);
     }
 
     // 统计小组内总成绩
     @GetMapping("processscores/groups")
     public Mono<ResultVO> getProcesses(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
         return teacherService.listProcessScores(g)
-                .map(processScores -> ResultVO.success(Map.of("processScores", processScores)));
+                .map(ResultVO::success);
     }
 
     // 重置密码
     @PutMapping("passwords/{number}")
     public Mono<ResultVO> putPassword(@PathVariable String number) {
         return teacherService.updatePassword(number)
-                .map(num -> ResultVO.success(Map.of("number", num)));
+                .map(ResultVO::success);
     }
 
     @PostMapping("students")
@@ -193,7 +195,7 @@ public class TeacherController {
                                        @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.addUsers(users, User.ROLE_STUDENT, depid)
                 .flatMap(r -> userService.listUsers(User.ROLE_STUDENT, depid))
-                .map(us -> ResultVO.success(Map.of("students", us)));
+                .map(ResultVO::success);
     }
 
     //
@@ -202,14 +204,15 @@ public class TeacherController {
                                         @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.updateStudents(users)
                 .flatMap(r -> userService.listUsers(User.ROLE_STUDENT, depid))
-                .map(us -> ResultVO.success(Map.of("students", us)));
+                .map(ResultVO::success);
     }
+
     //
     @GetMapping("users/{account}")
     public Mono<ResultVO> getStudent(@PathVariable String account,
                                      @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.getUser(account, depid)
-                .map(student -> ResultVO.success(Map.of("user", student)));
+                .map(ResultVO::success);
     }
 
     @PutMapping("users/{account}/groups/{g}")
@@ -219,6 +222,7 @@ public class TeacherController {
         return teacherService.updateGroup(account, g, depid)
                 .thenReturn(ResultVO.ok());
     }
+
     //
     @PatchMapping("student")
     public Mono<ResultVO> patchStudent(@RequestBody User user,

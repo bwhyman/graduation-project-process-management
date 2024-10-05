@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -27,6 +25,6 @@ public class UserController {
     @GetMapping("processes")
     public Mono<ResultVO> getProcesses(@RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return userService.listProcesses(depid)
-                .map(processes -> ResultVO.success(Map.of("processes", processes)));
+                .map(ResultVO::success);
     }
 }
