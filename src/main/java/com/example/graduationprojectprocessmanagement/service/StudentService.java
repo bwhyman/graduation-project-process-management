@@ -17,13 +17,13 @@ public class StudentService {
     private final ProcessFileRepository processFileRepository;
 
     @Transactional
-    public Mono<ProcessFile> addProcessFile(ProcessFile processFile) {
+    public Mono<Void> addProcessFile(ProcessFile processFile) {
         return processFileRepository.findByProcessIdAndStudentIdAndNumber(processFile.getProcessId(), processFile.getStudentId(), processFile.getNumber())
                 .flatMap(p -> {
                     p.setDetail(processFile.getDetail());
                     return processFileRepository.save(p);
                 })
-                .switchIfEmpty(Mono.defer(() -> processFileRepository.save(processFile)));
+                .switchIfEmpty(processFileRepository.save(processFile)).then();
     }
 
     public Mono<List<ProcessFile>> listProcessFiles(String pid, String sid) {

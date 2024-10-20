@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,8 +26,8 @@ public class AdminController {
     public Mono<ResultVO> postTeachers(@RequestBody List<User> users,
                                        @PathVariable String depid) {
         return teacherService.addUsers(users, User.ROLE_TEACHER, depid)
-                .flatMap(r -> userService.listUsers(User.ROLE_TEACHER, depid))
-                .map(us -> ResultVO.success(Map.of("teachers", us)));
+                .then(userService.listUsers(User.ROLE_TEACHER, depid))
+                .map(ResultVO::success);
     }
 
     @GetMapping("departments")
@@ -41,13 +40,13 @@ public class AdminController {
     @PostMapping("departments")
     public Mono<ResultVO> postDepartment(@RequestBody Department department) {
         return adminService.addDepartment(department)
-                .flatMap(r -> adminService.listDepartments())
+                .then(adminService.listDepartments())
                 .map(ResultVO::success);
     }
     @DeleteMapping("departments/{did}")
     public Mono<ResultVO>delDepartment(@PathVariable String did) {
         return adminService.removeDepartment(did)
-                .flatMap(r -> adminService.listDepartments())
+                .then(adminService.listDepartments())
                 .map(ResultVO::success);
     }
 }

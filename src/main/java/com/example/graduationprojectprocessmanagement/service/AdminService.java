@@ -21,21 +21,21 @@ public class AdminService {
     private final DepartmentRepository departmentRepository;
 
     @Transactional
-    public Mono<Department> addDepartment(Department department) {
-        return departmentRepository.save(department);
+    public Mono<Void> addDepartment(Department department) {
+        return departmentRepository.save(department).then();
     }
 
     public Mono<List<Department>> listDepartments() {
         return departmentRepository.findAll().collectList();
     }
     @Transactional
-    public Mono<Integer> removeDepartment(String did) {
+    public Mono<Void> removeDepartment(String did) {
         return userRepository.countByDepartmentId(did)
                 .flatMap(r -> {
                     if(r > 0) {
                         return Mono.error(XException.builder().codeN(Code.ERROR).message("部门包含用户禁止删除").build());
                     }
-                    return departmentRepository.deleteById(did).thenReturn(1);
+                    return departmentRepository.deleteById(did).then();
                 });
     }
 }

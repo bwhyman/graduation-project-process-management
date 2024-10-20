@@ -25,10 +25,6 @@ public class UserService {
         return userRepository.findByNumber(number);
     }
 
-    public Mono<User> getUser(String uid) {
-        return userRepository.findById(uid);
-    }
-
     public Mono<List<User>> listStudents(String tid, String depid) {
         return userRepository.findStudentByTeacherId(tid, depid).collectList();
     }
@@ -41,8 +37,8 @@ public class UserService {
         return userRepository.findByRoleAndGroupNumber(depid, role, groupNumber).collectList();
     }
     @Transactional
-    public Mono<Integer> updatePassword(String uid, String password) {
-        return userRepository.updatePasswordById(uid, passwordEncoder.encode(password));
+    public Mono<Void> updatePassword(String uid, String password) {
+        return userRepository.updatePasswordById(uid, passwordEncoder.encode(password)).then();
     }
 
     public Mono<List<Process>> listProcesses(String depid) {

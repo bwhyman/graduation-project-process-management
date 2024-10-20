@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,17 +29,17 @@ public class TeacherService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Mono<Process> addProcess(Process process) {
-        return processRepository.save(process);
+    public Mono<Void> addProcess(Process process) {
+        return processRepository.save(process).then();
     }
 
     @Transactional
-    public Mono<Integer> removeProcess(String pid, String depid) {
-        return processRepository.deleteByIdAndDepartmentId(pid, depid).thenReturn(1);
+    public Mono<Void> removeProcess(String pid, String depid) {
+        return processRepository.deleteByIdAndDepartmentId(pid, depid).then();
     }
 
     @Transactional
-    public Mono<Integer> updateProcess(Process process, String depid) {
+    public Mono<Void> updateProcess(Process process, String depid) {
         return processRepository.findByIdAndDepartmentId(process.getId(), depid)
                 .flatMap(p -> {
                     p.setAuth(process.getAuth());
@@ -49,7 +48,7 @@ public class TeacherService {
                     p.setName(process.getName());
                     p.setStudentAttach(process.getStudentAttach());
                     return processRepository.save(p);
-                }).thenReturn(1);
+                }).then();
     }
 
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber, String processId) {
@@ -69,11 +68,12 @@ public class TeacherService {
     }
 
     @Transactional
-    public Mono<Integer> updateProcessScore(ProcessScore processScore) {
+    public Mono<Void> updateProcessScore(ProcessScore processScore) {
         if (processScore.getId() != null) {
-            return processScoreRepository.updateDetail(processScore.getId(), processScore.getDetail());
+            return processScoreRepository.updateDetail(processScore.getId(), processScore.getDetail())
+                    .then();
         }
-        return processScoreRepository.save(processScore).thenReturn(1);
+        return processScoreRepository.save(processScore).then();
     }
 
     public Mono<List<ProcessScore>> listProcessScores() {
@@ -89,31 +89,29 @@ public class TeacherService {
     }
 
     @Transactional
-    public Mono<Integer> addUsers(List<User> users, String role, String depid) {
+    public Mono<Void> addUsers(List<User> users, String role, String depid) {
         for (User user : users) {
             user.setDepartmentId(depid);
             user.setPassword(passwordEncoder.encode(user.getNumber()));
             user.setRole(role);
         }
-        return userRepository.saveAll(users).then(Mono.just(1));
+        return userRepository.saveAll(users).then();
     }
 
     @Transactional
-    public Mono<Integer> updateStudents(List<User> users) {
-        List<Mono<User>> list = new ArrayList<>();
-        for (User user : users) {
-            Mono<User> byNumber = userRepository.findByNumber(user.getNumber()).flatMap(u -> {
-                if(user.getGroupNumber() != null) {
-                    u.setGroupNumber(user.getGroupNumber());
-                }
-                if(user.getStudent() != null) {
-                    u.setStudent(user.getStudent());
-                }
-                return userRepository.save(u);
-            });
-            list.add(byNumber);
-        }
-        return Flux.merge(list).collectList().thenReturn(1);
+    public Mono<Void> updateStudents(List<User> users) {
+        return Flux.fromIterable(users)
+                .flatMap(user -> userRepository.findByNumber(user.getNumber()))
+                .flatMap(user -> {
+                    if(user.getGroupNumber() != null) {
+                        user.setGroupNumber(user.getGroupNumber());
+                    }
+                    if(user.getStudent() != null) {
+                        user.setStudent(user.getStudent());
+                    }
+                    return userRepository.save(user);
+                })
+                .then();
     }
 
     public Mono<User> getUser(String account, String depid) {

@@ -1,4 +1,4 @@
-package com.example.graduationprojectprocessmanagement.controller.exception;
+package com.example.graduationprojectprocessmanagement.controller;
 
 
 import com.example.graduationprojectprocessmanagement.exception.Code;

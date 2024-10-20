@@ -41,12 +41,13 @@ public class TeacherController {
     private String uploadDirectory;
 
     // 添加过程
+    @Operation(summary = "items/studentAttach以json类型存储，前端需将JS对象显式序列化为字符串")
     @PostMapping("processes")
     public Mono<ResultVO> postProcess(@RequestBody Process process,
                                       @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         process.setDepartmentId(depid);
         return teacherService.addProcess(process)
-                .flatMap(r -> userService.listProcesses(depid))
+                .then(userService.listProcesses(depid))
                 .map(ResultVO::success);
     }
 
@@ -54,16 +55,16 @@ public class TeacherController {
     public Mono<ResultVO> delProcess(@PathVariable String pid,
                                      @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.removeProcess(pid, depid)
-                .flatMap(r -> userService.listProcesses(depid)
-                        .map(ResultVO::success));
+                .then(userService.listProcesses(depid))
+                .map(ResultVO::success);
     }
 
     @PatchMapping("processes")
     public Mono<ResultVO> patchProcess(@RequestBody Process process,
                                        @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.updateProcess(process, depid)
-                .flatMap(r -> userService.listProcesses(depid)
-                        .map(ResultVO::success));
+                .then(userService.listProcesses(depid))
+                .map(ResultVO::success);
     }
 
     @GetMapping("{tid}/students")
@@ -111,7 +112,10 @@ public class TeacherController {
                 .map(ResultVO::success);
     }
 
-    @Operation(summary = "评分后，需要基于auth参数决定返回小组/指导学生成绩")
+    @Operation(summary = """
+            评分后，需要基于auth参数决定返回小组/指导学生成绩；
+            ProcessScore detail数据以json类型存储
+            """)
     // 更新与添加
     @PostMapping("processscores/types/{auth}")
     public Mono<ResultVO> postProcess(
@@ -194,7 +198,7 @@ public class TeacherController {
     public Mono<ResultVO> postStudents(@RequestBody List<User> users,
                                        @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.addUsers(users, User.ROLE_STUDENT, depid)
-                .flatMap(r -> userService.listUsers(User.ROLE_STUDENT, depid))
+                .then(userService.listUsers(User.ROLE_STUDENT, depid))
                 .map(ResultVO::success);
     }
 
@@ -203,7 +207,7 @@ public class TeacherController {
     public Mono<ResultVO> patchStudents(@RequestBody List<User> users,
                                         @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
         return teacherService.updateStudents(users)
-                .flatMap(r -> userService.listUsers(User.ROLE_STUDENT, depid))
+                .then(userService.listUsers(User.ROLE_STUDENT, depid))
                 .map(ResultVO::success);
     }
 

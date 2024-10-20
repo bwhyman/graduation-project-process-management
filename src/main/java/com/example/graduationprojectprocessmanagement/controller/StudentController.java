@@ -110,10 +110,10 @@ public class StudentController {
                                 Path finPath = path.resolve(filePart.filename());
                                 return filePart.transferTo(finPath);
                             })
-                            .then(Mono.defer(() -> studentService.addProcessFile(pf)));
+                            .then(studentService.addProcessFile(pf));
                 })
-                .flatMap(pf -> studentService.listProcessFiles(pid, sid)
-                        .map(ResultVO::success))
+                .then(studentService.listProcessFiles(pid, sid))
+                .map(ResultVO::success)
                 .onErrorResume(ex -> Mono.just(ResultVO.error(Code.ERROR, "文件上传错误！" + ex.getMessage())));
     }
 
