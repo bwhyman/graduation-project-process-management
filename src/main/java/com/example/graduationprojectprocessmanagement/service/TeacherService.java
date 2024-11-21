@@ -69,15 +69,15 @@ public class TeacherService {
 
     @Transactional
     public Mono<Void> updateProcessScore(ProcessScore processScore) {
-        if (processScore.getId() != null) {
-            return processScoreRepository.updateDetail(processScore.getId(), processScore.getDetail())
-                    .then();
-        }
-        return processScoreRepository.save(processScore).then();
+
+        return Mono.justOrEmpty(processScore.getId())
+                .flatMap(id -> processScoreRepository.updateDetail(id, processScore.getDetail()))
+                .switchIfEmpty(processScoreRepository.save(processScore).thenReturn(1))
+                .then();
     }
 
-    public Mono<List<ProcessScore>> listProcessScores() {
-        return processScoreRepository.findAll().collectList();
+    public Mono<List<ProcessScore>> listProcessScores(String depid) {
+        return processScoreRepository.findByDepId(depid).collectList();
     }
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber) {
         return processScoreRepository.findByGroup(groupNumber).collectList();

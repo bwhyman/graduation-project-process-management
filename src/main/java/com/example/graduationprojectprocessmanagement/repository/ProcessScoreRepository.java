@@ -52,4 +52,10 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
             where ps.student_id=u.id and u.group_number=:groupNumber;
             """)
     Flux<ProcessScore> findByGroup(int groupNumber);
+
+    @Query("""
+            select * from process_score ps, process p
+            where ps.process_id=p.id and p.department_id=:depid
+            """)
+    Flux<ProcessScore> findByDepId(String depid);
 }

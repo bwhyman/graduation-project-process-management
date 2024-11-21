@@ -104,11 +104,9 @@ public class TeacherController {
     public Mono<ResultVO> getProcesScore(@PathVariable String pid, @PathVariable String auth,
                                          @RequestAttribute(RequestAttributeConstant.UID) String tid,
                                          @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
-        if (auth.equals(Process.REVIEW)) {
-            return teacherService.listProcessScores(g, pid)
-                    .map(ResultVO::success);
-        }
-        return teacherService.listProcessScores(tid, pid)
+        return Mono.defer(() -> auth.equals(Process.REVIEW)
+                ? teacherService.listProcessScores(g, pid)
+                : teacherService.listProcessScores(tid, pid))
                 .map(ResultVO::success);
     }
 
@@ -123,15 +121,12 @@ public class TeacherController {
             @RequestBody ProcessScore ps,
             @RequestAttribute(RequestAttributeConstant.UID) String tid,
             @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
+        var pid = ps.getProcessId();
         return teacherService.updateProcessScore(ps)
-                .then(Mono.defer(() -> {
-                    if (auth.equals(Process.REVIEW)) {
-                        return teacherService.listProcessScores(g, ps.getProcessId())
-                                .map(ResultVO::success);
-                    }
-                    return teacherService.listProcessScores(tid, ps.getProcessId())
-                            .map(ResultVO::success);
-                }));
+                .then(Mono.defer(() -> auth.equals(Process.REVIEW)
+                        ? teacherService.listProcessScores(g, pid)
+                        : teacherService.listProcessScores(tid, pid)))
+                .map(ResultVO::success);
     }
 
     @GetMapping("processfiles/{pid}/types/{auth}")
@@ -139,11 +134,9 @@ public class TeacherController {
                                           @PathVariable String auth,
                                           @RequestAttribute(RequestAttributeConstant.UID) String tid,
                                           @RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
-        if (auth.equals(Process.REVIEW)) {
-            return teacherService.listProcessFiles(g, pid)
-                    .map(ResultVO::success);
-        }
-        return teacherService.listProcessFiles(tid, pid)
+        return Mono.defer(() -> auth.equals(Process.REVIEW)
+                ? teacherService.listProcessFiles(g, pid)
+                : teacherService.listProcessFiles(tid, pid))
                 .map(ResultVO::success);
     }
 
@@ -175,8 +168,8 @@ public class TeacherController {
 
     // 加载全部学生评分
     @GetMapping("processscores")
-    public Mono<ResultVO> getProcessScores() {
-        return teacherService.listProcessScores()
+    public Mono<ResultVO> getProcessScores(@RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
+        return teacherService.listProcessScores(depid)
                 .map(ResultVO::success);
     }
 

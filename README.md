@@ -50,8 +50,7 @@
 OpenJDK ^21  
 springboot ^3.3.1  
 spring-data-r2dbc   
-spring-webflux   
-asyncer-io    
+spring-webflux    
 MySQL 8.0.32
 
 尝试了redis 7。spring-redis不支持原生JSON，redis官方OM框架支持有限且很不灵活。  
@@ -60,6 +59,10 @@ MySQL 8.0.32
 [技术笔记](./techs.md)
 
 ### update
+
+#### 2024-11-21
+
+修复按专业获取全部评分bug。
 
 #### 2024-10-20
 
