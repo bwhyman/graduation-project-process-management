@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -79,6 +80,7 @@ public class TeacherService {
     public Mono<List<ProcessScore>> listProcessScores(String depid) {
         return processScoreRepository.findByDepId(depid).collectList();
     }
+
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber) {
         return processScoreRepository.findByGroup(groupNumber).collectList();
     }
@@ -100,18 +102,21 @@ public class TeacherService {
 
     @Transactional
     public Mono<Void> updateStudents(List<User> users) {
-        return Flux.fromIterable(users)
-                .flatMap(user -> userRepository.findByNumber(user.getNumber()))
-                .flatMap(user -> {
-                    if(user.getGroupNumber() != null) {
-                        user.setGroupNumber(user.getGroupNumber());
-                    }
-                    if(user.getStudent() != null) {
-                        user.setStudent(user.getStudent());
-                    }
-                    return userRepository.save(user);
-                })
-                .then();
+        List<Mono<User>> list = new ArrayList<>();
+        for (User user : users) {
+            Mono<User> byNumber = userRepository.findByNumber(user.getNumber())
+                    .flatMap(u -> {
+                        if (user.getGroupNumber() != null) {
+                            u.setGroupNumber(user.getGroupNumber());
+                        }
+                        if (user.getStudent() != null) {
+                            u.setStudent(user.getStudent());
+                        }
+                        return userRepository.save(u);
+                    });
+            list.add(byNumber);
+        }
+        return Flux.merge(list).collectList().then();
     }
 
     public Mono<User> getUser(String account, String depid) {
@@ -122,11 +127,12 @@ public class TeacherService {
     public Mono<Integer> updateGroup(String number, int g, String depid) {
         return userRepository.updateGroup(number, g, depid);
     }
+
     @Transactional
     public Mono<Integer> updateStudent(User user, String depid) {
         return userRepository.findByNumberAndDepartmentId(user.getNumber(), depid)
                 .flatMap(u -> {
-                    if(user.getGroupNumber() != null) {
+                    if (user.getGroupNumber() != null) {
                         u.setGroupNumber(user.getGroupNumber());
                     }
                     if (user.getStudent() != null) {
