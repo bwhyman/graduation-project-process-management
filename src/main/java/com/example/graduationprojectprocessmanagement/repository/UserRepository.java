@@ -41,34 +41,11 @@ public interface UserRepository extends ReactiveCrudRepository<User, String> {
             """)
     Mono<Integer> updatePasswordByNumber(String number, String password);
 
-    @Query("""
-            select * from user u where u.student is null and role=1;
-            """)
-    Flux<User> findAllUnSelected();
-
-    @Modifying
-    @Query("""
-            update user u set u.student=null where u.role=1;
-            """)
-    Mono<Integer> updateStudentData();
-
-    @Modifying
-    @Query("""
-            update user u set u.teacher=json_set(u.teacher, '$.count', 0) where u.role=5;
-            """)
-    Mono<Integer> updateTeacherData();
-
     @Modifying
     @Query("""
             update user u set u.group_number=:g where u.number=:number and u.department_id=:depid;
             """)
     Mono<Integer> updateGroup(String number, int g, String depid);
-
-    @Modifying
-    @Query("""
-            update user u set u.student=:student where u.id=:sid
-            """)
-    Mono<Integer> updateStudent(String sid, String student);
 
     Mono<Integer> countByDepartmentId(String did);
 }

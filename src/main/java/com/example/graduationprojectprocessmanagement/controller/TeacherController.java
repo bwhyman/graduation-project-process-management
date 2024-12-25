@@ -3,6 +3,7 @@ package com.example.graduationprojectprocessmanagement.controller;
 import com.example.graduationprojectprocessmanagement.dox.Process;
 import com.example.graduationprojectprocessmanagement.dox.ProcessScore;
 import com.example.graduationprojectprocessmanagement.dox.User;
+import com.example.graduationprojectprocessmanagement.dto.StudentDTO;
 import com.example.graduationprojectprocessmanagement.service.TeacherService;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
@@ -195,11 +196,27 @@ public class TeacherController {
                 .map(ResultVO::success);
     }
 
-    //
-    @PatchMapping("students")
+    @PatchMapping("students/teachers")
     public Mono<ResultVO> patchStudents(@RequestBody List<User> users,
                                         @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
-        return teacherService.updateStudents(users)
+        return teacherService.updateStudentsTeachers(users)
+                .then(userService.listUsers(User.ROLE_STUDENT, depid))
+                .map(ResultVO::success);
+    }
+
+    //
+    @PatchMapping("students/groups")
+    public Mono<ResultVO> patchStudentGroups(@RequestBody List<StudentDTO> users,
+                                        @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
+        return teacherService.updateStudentsGroups(users)
+                .then(userService.listUsers(User.ROLE_STUDENT, depid))
+                .map(ResultVO::success);
+    }
+
+    @PatchMapping("students/projecttitles")
+    public Mono<ResultVO> patchStudentsProjectTitless(@RequestBody List<StudentDTO> users,
+                                        @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
+        return teacherService.updateProjects(users)
                 .then(userService.listUsers(User.ROLE_STUDENT, depid))
                 .map(ResultVO::success);
     }
