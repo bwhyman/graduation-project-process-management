@@ -56,7 +56,7 @@ public class TeacherService {
     }
 
     public Mono<List<ProcessScore>> listProcessScores(int groupNumber, String processId) {
-        return processScoreRepository.findByGroup(groupNumber, processId).collectList();
+        return processScoreRepository.findByGroupAndProcessId(groupNumber, processId).collectList();
     }
 
     public Mono<List<ProcessScore>> listProcessScores(String tid, String processId) {
@@ -84,8 +84,8 @@ public class TeacherService {
         return processScoreRepository.findByDepId(depid).collectList();
     }
 
-    public Mono<List<ProcessScore>> listProcessScores(int groupNumber) {
-        return processScoreRepository.findByGroup(groupNumber).collectList();
+    public Mono<List<ProcessScore>> listDepartProcessScores(int groupNumber, String depid) {
+        return processScoreRepository.findByGroupAndDepId(groupNumber, depid).collectList();
     }
 
     @Transactional

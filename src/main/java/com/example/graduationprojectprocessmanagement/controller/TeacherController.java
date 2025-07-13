@@ -176,8 +176,8 @@ public class TeacherController {
 
     // 统计小组内总成绩
     @GetMapping("processscores/groups")
-    public Mono<ResultVO> getProcesses(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g) {
-        return teacherService.listProcessScores(g)
+    public Mono<ResultVO> getProcesses(@RequestAttribute(RequestAttributeConstant.GROUP_NUMBER) int g, @RequestAttribute(RequestAttributeConstant.DEPARTMENT_ID) String depid) {
+        return teacherService.listDepartProcessScores(g, depid)
                 .map(ResultVO::success);
     }
 

@@ -21,7 +21,7 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
             on ps.student_id=u.id
             where u.group_number=:groupNumber and ps.process_id=:pid;
             """)
-    Flux<ProcessScore> findByGroup(int groupNumber, String pid);
+    Flux<ProcessScore> findByGroupAndProcessId(int groupNumber, String pid);
 
     @Query("""
             select ps.id as id,
@@ -49,9 +49,9 @@ public interface ProcessScoreRepository extends ReactiveCrudRepository<ProcessSc
                 ps.teacher_id as teacher_id,
                 ps.detail as detail
             from process_score ps, user u
-            where ps.student_id=u.id and u.group_number=:groupNumber;
+            where ps.student_id=u.id and u.group_number=:groupNumber and u.department_id=:depid;
             """)
-    Flux<ProcessScore> findByGroup(int groupNumber);
+    Flux<ProcessScore> findByGroupAndDepId(int groupNumber, String depid);
 
     @Query("""
             select * from process_score ps, process p
