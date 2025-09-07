@@ -4,6 +4,8 @@ import com.example.graduationprojectprocessmanagement.dox.Process;
 import com.example.graduationprojectprocessmanagement.dox.ProcessScore;
 import com.example.graduationprojectprocessmanagement.dox.User;
 import com.example.graduationprojectprocessmanagement.dto.StudentDTO;
+import com.example.graduationprojectprocessmanagement.exception.Code;
+import com.example.graduationprojectprocessmanagement.exception.XException;
 import com.example.graduationprojectprocessmanagement.service.TeacherService;
 import com.example.graduationprojectprocessmanagement.service.UserService;
 import com.example.graduationprojectprocessmanagement.vo.RequestAttributeConstant;
@@ -146,6 +148,10 @@ public class TeacherController {
     @GetMapping("download/{pname}")
     public Flux<DataBuffer> download(@PathVariable String pname, ServerHttpResponse response) throws IOException {
         Path path = Path.of(uploadDirectory).resolve(pname);
+        if(Files.notExists(path)) {
+            var result = pname + "; 文件不存在！";
+            throw XException.builder().codeN(Code.ERROR).message(result).build();
+        }
         String name = URLEncoder.encode(path.getFileName().toString(), StandardCharsets.UTF_8);
         HttpHeaders headers = response.getHeaders();
         headers.set("filename", name);
